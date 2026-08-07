@@ -66,7 +66,7 @@ ok "依赖就绪"
 
 # ---- 5. 构建 ----
 log "开始构建..."
-pnpm build || fail "构建失败"
+FIREFLY_BUILD_PLATFORM="Cloudflare Workers" pnpm build || fail "构建失败"
 ok "构建完成"
 
 # ---- 6. 检查构建产物 ----

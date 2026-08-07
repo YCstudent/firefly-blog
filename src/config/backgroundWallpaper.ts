@@ -73,20 +73,20 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
 			// 是否启用主页横幅文字
 			enable: true,
 			// 主页横幅主标题
-			title: "Lovely firefly!",
+			title: "Ustinus",
 			// 主页横幅主标题字体大小
-			titleSize: "4.5rem",
+			titleSize: "3.5rem",
 			// 主页横幅副标题
 			subtitle: [
-				"In Reddened Chrysalis, I Once Rest",
-				"From Shattered Sky, I Free Fall",
-				"Amidst Silenced Stars, I Deep Sleep",
-				"Upon Lighted Fyrefly, I Soon Gaze",
-				"From Undreamt Night, I Thence Shine",
-				"In Finalized Morrow, I Full Bloom",
+				"星裂长夜，光破重霄",
+				"Stay hungry, stay foolish.",
+				"学而不思则罔，思而不学则殆",
+				"代码是写给人看的，顺便能被机器执行",
+				"千里之行，始于足下",
+				"The best time to plant a tree was 20 years ago. The second best time is now.",
 			],
 			// 主页横幅副标题字体大小
-			subtitleSize: "1.5rem",
+			subtitleSize: "1.2rem",
 			typewriter: {
 				// 是否启用打字机效果
 				// 打字机开启 → 循环显示所有副标题
