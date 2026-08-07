@@ -68,12 +68,12 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
 			titleSize: "3.5rem",
 			// 主页横幅副标题
 			subtitle: [
-				"The night breaks. The light rises.",
-				"With great power comes great responsibility.",
-				"It's a leap of faith.",
-				"Anyone can wear the mask.",
-				"No matter how many hits I take, I always get back up.",
-				"You won't know what you can do until you stand up and decide to try.",
+				"The night breaks. The light rises. — Ustinus",
+				"With great power comes great responsibility. — Uncle Ben",
+				"It's a leap of faith. — Peter B. Parker, Into the Spider-Verse",
+				"Anyone can wear the mask. — Miles Morales, Into the Spider-Verse",
+				"No matter how many hits I take, I always get back up. — Peter Parker, Into the Spider-Verse",
+				"You won't know what you can do until you stand up and decide to try. — Aunt May",
 			],
 			// 主页横幅副标题字体大小
 			subtitleSize: "1.2rem",
