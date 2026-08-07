@@ -91,30 +91,30 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 		icon: "material-symbols:link",
 		// 子菜单
 		children: [
-			{
-				name: "GitHub",
-				url: "https://github.com/CuteLeaf/Firefly",
-				external: true,
-				icon: "fa7-brands:github",
-			},
-			{
-				name: "Gitee",
-				url: "https://gitee.com/CuteLeaf/Firefly",
-				external: true,
-				icon: "fa7-brands:gitee",
-			},
-			{
-				name: "QQ交流群",
-				url: "https://qm.qq.com/q/ZGsFa8qX2G",
-				external: true,
-				icon: "fa7-brands:qq",
-			},
-			{
-				name: "Firefly文档",
-				url: "https://docs-firefly.cuteleaf.cn",
-				external: true,
-				icon: "material-symbols:docs",
-			},
+				{
+					name: "GitHub",
+					url: "https://github.com/YCstudent",
+					external: true,
+					icon: "fa7-brands:github",
+				},
+				{
+					name: "Bilibili",
+					url: "https://space.bilibili.com/449130440",
+					external: true,
+					icon: "simple-icons:bilibili",
+				},
+				{
+					name: "Email",
+					url: "mailto:2917321268@qq.com",
+					external: true,
+					icon: "fa7-solid:envelope",
+				},
+				{
+					name: "Firefly文档",
+					url: "https://docs-firefly.cuteleaf.cn",
+					external: true,
+					icon: "material-symbols:docs",
+				},
 		],
 	});
 
