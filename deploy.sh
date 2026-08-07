@@ -64,7 +64,12 @@ if [[ package.json -nt node_modules ]] || [[ pnpm-lock.yaml -nt node_modules ]];
 fi
 ok "依赖就绪"
 
-# ---- 5. 构建 ----
+# ---- 5. 格式化 ----
+log "格式化代码..."
+npx biome format --write ./src 2>/dev/null || true
+ok "格式检查完成"
+
+# ---- 6. 构建 ----
 log "开始构建..."
 FIREFLY_BUILD_PLATFORM="Cloudflare Workers" pnpm build || fail "构建失败"
 ok "构建完成"
