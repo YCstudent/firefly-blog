@@ -108,6 +108,10 @@ const siteLang = lang.replace("_", "-");
     <style is:inline>
 			@layer properties, theme, base, components, utilities;
 		</style>
+    <style is:inline>
+			* { cursor: url('/favicon/cursor.svg') 4 4, auto; }
+			a, button, input, select, [role="button"] { cursor: url('/favicon/cursor.svg') 4 4, pointer; }
+		</style>
     {analyticsConfig?.googleAnalyticsId && (
             <GoogleAnalytics analyticsId={analyticsConfig.googleAnalyticsId} />
     )}

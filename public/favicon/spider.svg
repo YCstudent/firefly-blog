@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Spider body -->
+  <ellipse cx="50" cy="55" rx="16" ry="12" fill="#cc1a1a"/>
+  <ellipse cx="50" cy="42" rx="10" ry="8" fill="#cc1a1a"/>
+  <!-- Eyes -->
+  <circle cx="46" cy="39" r="3" fill="white"/>
+  <circle cx="54" cy="39" r="3" fill="white"/>
+  <circle cx="45" cy="39" r="1.5" fill="#111"/>
+  <circle cx="53" cy="39" r="1.5" fill="#111"/>
+  <!-- Legs -->
+  <g stroke="#cc1a1a" stroke-width="2.5" stroke-linecap="round" fill="none">
+    <!-- Left legs -->
+    <path d="M34,45 Q20,30 12,35"/>
+    <path d="M34,48 Q18,45 10,50"/>
+    <path d="M34,52 Q20,58 12,65"/>
+    <path d="M34,56 Q22,68 15,75"/>
+    <!-- Right legs -->
+    <path d="M66,45 Q80,30 88,35"/>
+    <path d="M66,48 Q82,45 90,50"/>
+    <path d="M66,52 Q80,58 88,65"/>
+    <path d="M66,56 Q78,68 85,75"/>
+  </g>
+  <!-- Web -->
+  <g stroke="#cc1a1a" stroke-width="0.5" fill="none" opacity="0.3">
+    <path d="M20,10 Q35,30 50,15 Q65,0 80,10"/>
+    <path d="M15,40 Q35,25 50,35 Q65,45 85,40"/>
+    <path d="M25,80 Q40,50 50,65 Q60,80 75,80"/>
+    <line x1="50" y1="15" x2="50" y2="65"/>
+  </g>
+</svg>
