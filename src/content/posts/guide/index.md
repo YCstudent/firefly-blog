@@ -4,7 +4,7 @@ published: 2026-08-07
 pinned: true
 description: "如何使用 Firefly 博客模板。"
 # image: "./cover.avif"  # 原作者封面
-image: "https://cloudflare-imgbed.2917321268.workers.dev/file/1786102798516_cover-default.jpg"
+image: "https://img.202886.xyz/file/1786102798516_cover-default.jpg"
 tags: ["Firefly", "博客", "Markdown", "指南"]
 category: 博客指南
 ---
@@ -21,7 +21,7 @@ title: 我的第一篇博客文章
 published: 2023-09-09
 description: 这是我新 Astro 博客的第一篇文章。
 # image: ./cover.jpg  # 原作者封面
-image: "https://cloudflare-imgbed.2917321268.workers.dev/file/1786102798516_cover-default.jpg"
+image: "https://img.202886.xyz/file/1786102798516_cover-default.jpg"
 tags: [前端, 开发]
 category: 前端开发
 draft: false
