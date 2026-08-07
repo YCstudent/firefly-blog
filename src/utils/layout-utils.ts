@@ -3,7 +3,10 @@ import { backgroundWallpaper } from "../config";
 export type BackgroundImages = {
 	desktop: string[];
 	mobile: string[];
+	desktopDark: string[];
+	mobileDark: string[];
 	isMultiple: boolean;
+	hasDarkVariant: boolean;
 };
 
 // 将单个值或数组统一为数组
@@ -27,13 +30,21 @@ export const getBackgroundImages = (): BackgroundImages => {
 		const srcObj = bgSrc as {
 			desktop?: string | string[];
 			mobile?: string | string[];
+			desktopDark?: string | string[];
+			mobileDark?: string | string[];
 		};
 		const desktopImages = toArray(srcObj.desktop);
 		const mobileImages = toArray(srcObj.mobile);
+		const desktopDarkImages = toArray(srcObj.desktopDark);
+		const mobileDarkImages = toArray(srcObj.mobileDark);
+		const hasDarkVariant = desktopDarkImages.length > 0 || mobileDarkImages.length > 0;
 		return {
 			desktop: desktopImages.length > 0 ? desktopImages : mobileImages,
 			mobile: mobileImages.length > 0 ? mobileImages : desktopImages,
+ 			desktopDark: desktopDarkImages.length > 0 ? desktopDarkImages : desktopImages,
+			mobileDark: mobileDarkImages.length > 0 ? mobileDarkImages : mobileImages,
 			isMultiple: desktopImages.length > 1 || mobileImages.length > 1,
+			hasDarkVariant,
 		};
 	}
 	// 如果是字符串或数组，同时用于桌面端和移动端
@@ -41,7 +52,10 @@ export const getBackgroundImages = (): BackgroundImages => {
 	return {
 		desktop: images,
 		mobile: images,
+		desktopDark: images,
+		mobileDark: images,
 		isMultiple: images.length > 1,
+		hasDarkVariant: false,
 	};
 };
 

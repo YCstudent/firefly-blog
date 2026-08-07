@@ -7,6 +7,8 @@ export type BackgroundWallpaperConfig = {
 		| {
 				desktop?: string | string[];
 				mobile?: string | string[];
+				desktopDark?: string | string[]; // 暗色模式桌面壁纸
+				mobileDark?: string | string[]; // 暗色模式移动端壁纸
 				playerUrl?: string | string[]; // 背景视频播放地址，支持单个视频路径或数组（多视频列表循环）
 		  }; // 支持单个图片、图片数组或分别设置桌面端和移动端图片
 	// 横幅壁纸和全屏壁纸共享配置
