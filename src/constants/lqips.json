@@ -44,5 +44,10 @@
   "src:content/posts/images/spider9-cover.jpg": "935f55a28265a38a77",
   "src:content/posts/images/spider7-cover.jpg": "965d70965e728f6071",
   "src:content/posts/images/spider6-cover.jpg": "987f86baaeb28c828a",
-  "src:content/posts/images/cover-default.jpg": "bfa29fbea4978c736f"
+  "src:content/posts/images/cover-default.jpg": "bfa29fbea4978c736f",
+  "public:gallery/spiderman/spider9-cover.jpg": "935f55a28265a38a77",
+  "public:gallery/spiderman/spider7-cover.jpg": "965d70965e728f6071",
+  "public:gallery/spiderman/spider6-cover.jpg": "987f86baaeb28c828a",
+  "public:gallery/spiderman/spider4-cover.jpg": "651b2497142a751121",
+  "public:gallery/spiderman/spider-bg.jpg": "7c5e6cd8bcc37e4e63"
 }

@@ -12,6 +12,14 @@ export const galleryConfig: GalleryConfig = {
 			date: "2026-08-08",
 			tags: ["Spider-Man", "Marvel"],
 		},
+		{
+			id: "elden-ring",
+			name: "艾尔登法环 黑夜君临",
+			description: "ELDEN RING NIGHTREIGN",
+			location: "狭间之地",
+			date: "2026-08-08",
+			tags: ["Elden Ring", "Nightreign", "FromSoftware"],
+		},
 	],
 
 	// 瀑布流最小列宽(px)，浏览器根据容器宽度自动计算列数，默认 240
