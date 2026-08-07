@@ -19,14 +19,7 @@ export const siteConfig: SiteConfig = {
 		"个人博客，记录技术学习、项目实践与生活思考。基于 Astro 和 Firefly 主题构建。",
 
 	// 站点关键词
-	keywords: [
-		"博客",
-		"技术博客",
-		"前端",
-		"Astro",
-		"编程",
-		"个人博客",
-	],
+	keywords: ["博客", "技术博客", "前端", "Astro", "编程", "个人博客"],
 
 	// 主题色
 	themeColor: {

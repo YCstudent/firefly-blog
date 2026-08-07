@@ -37,13 +37,19 @@ export const getBackgroundImages = (): BackgroundImages => {
 		const mobileImages = toArray(srcObj.mobile);
 		const desktopDarkImages = toArray(srcObj.desktopDark);
 		const mobileDarkImages = toArray(srcObj.mobileDark);
-		const hasDarkVariant = desktopDarkImages.length > 0 || mobileDarkImages.length > 0;
+		const hasDarkVariant =
+			desktopDarkImages.length > 0 || mobileDarkImages.length > 0;
 		return {
 			desktop: desktopImages.length > 0 ? desktopImages : mobileImages,
 			mobile: mobileImages.length > 0 ? mobileImages : desktopImages,
- 			desktopDark: desktopDarkImages.length > 0 ? desktopDarkImages : desktopImages,
+			desktopDark:
+				desktopDarkImages.length > 0 ? desktopDarkImages : desktopImages,
 			mobileDark: mobileDarkImages.length > 0 ? mobileDarkImages : mobileImages,
-			isMultiple: desktopImages.length > 1 || mobileImages.length > 1 || desktopDarkImages.length > 1 || mobileDarkImages.length > 1,
+			isMultiple:
+				desktopImages.length > 1 ||
+				mobileImages.length > 1 ||
+				desktopDarkImages.length > 1 ||
+				mobileDarkImages.length > 1,
 			hasDarkVariant,
 		};
 	}
