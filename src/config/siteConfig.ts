@@ -54,7 +54,7 @@ export const siteConfig: SiteConfig = {
 	favicon: [
 		{
 			// 图标文件路径
-			src: "/favicon/spiderman-icon.svg",
+			src: "/favicon/spider-face.svg",
 			// 可选，指定主题 'light' | 'dark'
 			// theme: "light",
 			// 可选，图标大小
@@ -75,7 +75,7 @@ export const siteConfig: SiteConfig = {
 		// 使用 Astro 图标库时不需要设置 valueDark，图标会自动跟随主题亮暗色切换
 		logo: {
 			type: "icon",
-			value: "icon-park:spider-man",
+			value: "game-icons:spider-mask",
 			alt: "🕷️",
 		},
 		// 导航栏标题
