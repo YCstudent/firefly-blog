@@ -43,7 +43,7 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
 			"https://img.202886.xyz/file/1786107056479_spider-bg3.jpg",
 		],
 		desktop: [
-			"https://img.202886.xyz/file/1786112192225_spider8-latest.jpg",
+			"https://img.202886.xyz/file/1786112477010_spider8-v3.jpg",
 			"https://img.202886.xyz/file/1786107051504_spider-bg.jpg",
 		],
 		// 移动背景图片（支持单张或多张随机）
