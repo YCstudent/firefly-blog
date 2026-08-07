@@ -103,7 +103,7 @@ export const siteConfig: SiteConfig = {
 		// 相册页面开关
 		gallery: true,
 		// 追番页面开关
-		anime: true,
+		anime: false,
 		// 动态页面开关
 		dynamic: true,
 		// 书签导航页面开关
@@ -190,7 +190,7 @@ export const siteConfig: SiteConfig = {
 	// bangumi配置
 	bangumi: {
 		// Bangumi用户ID
-		userId: "1143164",
+		userId: "1271383",
 		// 数据模式：static=构建时获取，dynamic=客户端实时获取
 		// static 模式在构建时获取数据并静态渲染，部署后数据不更新
 		// dynamic 模式在浏览器中实时请求 API，始终显示最新数据
@@ -202,7 +202,7 @@ export const siteConfig: SiteConfig = {
 		// 条目类型排序，数组中的类型将按顺序优先展示
 		// 可选值: "anime" | "book" | "music" | "game" | "real" (暂不支持"real"类型)
 		// 未列出的类型将按默认顺序排在后面
-		categoryOrder: ["anime", "book", "music", "game"],
+		categoryOrder: ["game", "book"],
 		// 控制各分类的启用状态（true/false），未指定的分类默认启用
 		// categories: {
 		// 	game: false, // 禁用游戏分类显示
