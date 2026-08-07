@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Mask base -->
+  <ellipse cx="50" cy="52" rx="35" ry="38" fill="#cc1a1a"/>
+  <ellipse cx="50" cy="50" rx="34" ry="36" fill="#d42020"/>
+
+  <!-- Left eye -->
+  <g transform="translate(28, 42)">
+    <path d="M0,8 Q8,-12 22,-6 Q24,2 20,12 Q12,18 0,8Z" fill="white" stroke="#111" stroke-width="2"/>
+    <path d="M2,8 Q10,-8 20,-4 Q22,4 18,12 Q10,16 2,8Z" fill="#f8f8f8"/>
+  </g>
+
+  <!-- Right eye -->
+  <g transform="translate(50, 42) scale(-1,1) translate(-50, 0)">
+    <path d="M0,8 Q8,-12 22,-6 Q24,2 20,12 Q12,18 0,8Z" fill="white" stroke="#111" stroke-width="2"/>
+    <path d="M2,8 Q10,-8 20,-4 Q22,4 18,12 Q10,16 2,8Z" fill="#f8f8f8"/>
+  </g>
+
+  <!-- Web pattern - horizontal lines -->
+  <g stroke="#991111" stroke-width="0.5" fill="none" opacity="0.6">
+    <path d="M22,25 Q50,20 78,25"/>
+    <path d="M20,35 Q50,30 80,35"/>
+    <path d="M18,48 Q50,44 82,48"/>
+    <path d="M18,58 Q50,55 82,58"/>
+    <path d="M20,68 Q50,65 80,68"/>
+    <path d="M24,78 Q50,76 76,78"/>
+  </g>
+
+  <!-- Web pattern - vertical center line -->
+  <line x1="50" y1="14" x2="50" y2="88" stroke="#991111" stroke-width="0.8" opacity="0.5"/>
+
+  <!-- Web pattern - radial lines -->
+  <g stroke="#991111" stroke-width="0.4" opacity="0.4">
+    <line x1="50" y1="16" x2="28" y2="42"/>
+    <line x1="50" y1="16" x2="72" y2="42"/>
+    <line x1="50" y1="16" x2="24" y2="65"/>
+    <line x1="50" y1="16" x2="76" y2="65"/>
+    <line x1="50" y1="25" x2="22" y2="50"/>
+    <line x1="50" y1="25" x2="78" y2="50"/>
+  </g>
+</svg>
