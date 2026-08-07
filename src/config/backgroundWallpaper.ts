@@ -42,7 +42,9 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
 			"/assets/images/spider4-cover.jpg",
 			"https://pub-c1824a6cf1a3422a928b777bbe1c7ef6.r2.dev/spider-bg3.jpg",
 		],
-		desktop: ["https://pub-c1824a6cf1a3422a928b777bbe1c7ef6.r2.dev/spider-bg.jpg"],
+		desktop: [
+			"https://pub-c1824a6cf1a3422a928b777bbe1c7ef6.r2.dev/spider-bg.jpg",
+		],
 		// 移动背景图片（支持单张或多张随机）
 		// mobile: "https://pub-c1824a6cf1a3422a928b777bbe1c7ef6.r2.dev/spider-bg.jpg",
 		mobile: [
