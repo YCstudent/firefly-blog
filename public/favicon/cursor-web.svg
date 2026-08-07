@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Web line shooting out -->
+  <g stroke="#ddd" stroke-width="1.5" fill="none" opacity="0.9">
+    <path d="M14,6 Q10,0 6,-2" stroke-width="1"/>
+    <path d="M12,8 Q6,2 2,0" stroke-width="0.8"/>
+    <path d="M10,10 Q6,5 0,4" stroke-width="0.6"/>
+  </g>
+  <!-- Hand - web shooting pose (thumb, index, pinky extended) -->
+  <g fill="#cc1a1a" stroke="#991111" stroke-width="0.3">
+    <!-- Palm -->
+    <ellipse cx="18" cy="16" rx="5" ry="5"/>
+    <!-- Thumb -->
+    <path d="M14,14 Q10,10 8,7 Q7,6 9,5 Q10,6 12,9 Q13,12 15,13Z"/>
+    <!-- Index finger (extended up, shooting) -->
+    <path d="M16,12 Q14,6 13,2 Q13,1 14.5,1 Q16,2 17,6 Q17.5,9 18,11Z"/>
+    <!-- Pinky -->
+    <path d="M21,14 Q26,12 28,9 Q29,8 28,7 Q26,8 24,10 Q22,12 20,13Z"/>
+  </g>
+</svg>
