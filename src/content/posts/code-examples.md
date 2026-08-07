@@ -6,7 +6,7 @@ description: 在Firefly中使用表达性代码的代码块在 Markdown 中的�
 tags: [Markdown, Firefly]
 category: 文章示例
 # image: ./images/firefly3.avif  # 原作者封面
-image: "https://img.202886.xyz/file/1786102798516_cover-default.jpg"
+image: "/assets/images/cover-default.jpg"
 slug: code-examples
 ---
 
