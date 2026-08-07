@@ -71,6 +71,11 @@ let commentService: string = commentConfig?.type || "none";
             <p>{i18n(Key.commentNotConfigured)}</p>
           </div>
         )}
+        {commentService !== "none" && (
+          <p class="text-center text-xs text-(--content-meta) mt-6 border-t border-(--line-divider) pt-4">
+            评论系统基于 GitHub Discussions (Giscus)，中国大陆地区可能无法正常加载，需要科学上网。
+          </p>
+        )}
       </div>
     </div>
   )
