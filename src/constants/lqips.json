@@ -35,5 +35,6 @@
   "src:assets/images/logo/firefly-light.png": "000000000000000000",
   "src:assets/images/logo/firefly-dark.png": "ffffffffffffffffff",
   "public:assets/images/spider-bg.jpg": "7c5d6bd9bbc37d4e64",
-  "public:assets/images/spider-bg2.jpg": "b17c72d4ab8d521a19"
+  "public:assets/images/spider-bg2.jpg": "b17c72d4ab8d521a19",
+  "public:assets/images/spider-bg2-desktop.jpg": "683f357858453e1716"
 }

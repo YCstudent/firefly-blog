@@ -40,7 +40,7 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
 		// desktop: "assets/images/DesktopWallpaper/d1.avif",
 		desktop: [
 			"/assets/images/spider-bg.jpg",
-			"/assets/images/spider-bg2.jpg",
+			"/assets/images/spider-bg2-desktop.jpg",
 		],
 		// 移动背景图片（支持单张或多张随机）
 		// mobile: "/assets/images/spider-bg.jpg",
