@@ -68,12 +68,12 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
 			titleSize: "3.5rem",
 			// 主页横幅副标题
 			subtitle: [
-				"星裂长夜，光破重霄",
-				"Stay hungry, stay foolish.",
-				"学而不思则罔，思而不学则殆",
-				"代码是写给人看的，顺便能被机器执行",
-				"千里之行，始于足下",
-				"The best time to plant a tree was 20 years ago. The second best time is now.",
+				"The night breaks. The light rises.",
+				"With great power comes great responsibility.",
+				"It's a leap of faith.",
+				"Anyone can wear the mask.",
+				"No matter how many hits I take, I always get back up.",
+				"You won't know what you can do until you stand up and decide to try.",
 			],
 			// 主页横幅副标题字体大小
 			subtitleSize: "1.2rem",
