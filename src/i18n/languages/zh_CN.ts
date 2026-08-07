@@ -109,11 +109,11 @@ export const zh_CN: Translation = {
 	[Key.updatedAt]: "更新于",
 	[Key.readTime]: "阅读时长",
 	[Key.license]: "许可协议",
-	[Key.bangumi]: "番组计划",
+	[Key.bangumi]: "个人爱好",
 
-	// 番组计划筛选和状态文本
-	[Key.bangumiTitle]: "我的番组计划",
-	[Key.bangumiSubtitle]: "记录我的二次元之旅",
+	// 个人爱好筛选和状态文本
+	[Key.bangumiTitle]: "个人爱好",
+	[Key.bangumiSubtitle]: "玩过的游戏，读过的书。",
 	[Key.bangumiFilterAll]: "全部",
 	[Key.bangumiFilterWatched]: "看过",
 	[Key.bangumiFilterWatching]: "在看",
@@ -150,10 +150,10 @@ export const zh_CN: Translation = {
 	[Key.bangumiEmptyReason]: "可能的原因：用户名不存在、网络连接问题或API限制",
 	[Key.bangumiFetchError]: "Bangumi 数据拉取失败",
 	[Key.bangumiFetchErrorDesc]:
-		"构建时从 Bangumi API 获取数据失败，该页面内容暂不可用。",
+		"数据获取失败，请稍后重试。",
 	[Key.bangumiUsername]: "用户名",
 	[Key.bangumiApi]: "API",
-	[Key.bangumiConfigTip]: "提示：请在页面配置中设置正确的Bangumi用户名",
+	[Key.bangumiConfigTip]: "提示：请在 bangumi.tv 标记你的游戏和读书进度",
 	[Key.bangumiPrevPage]: "上一页",
 	[Key.bangumiNextPage]: "下一页",
 	[Key.bangumiCurrentPage]: "第",
