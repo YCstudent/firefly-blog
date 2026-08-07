@@ -41,6 +41,7 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
 		desktop: [
 			"/assets/images/spider-bg.jpg",
 			"/assets/images/spider-bg3.jpg",
+			"/assets/images/spider-bg4.jpg",
 		],
 		// 移动背景图片（支持单张或多张随机）
 		// mobile: "/assets/images/spider-bg.jpg",
@@ -48,6 +49,7 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
 			"/assets/images/spider-bg.jpg",
 			"/assets/images/spider-bg2.jpg",
 			"/assets/images/spider-bg3.jpg",
+			"/assets/images/spider-bg4.jpg",
 		],
 		// 背景视频播放地址
 		// 支持单个视频路径（字符串）或多个视频循环（数组，参考上面壁纸配置）
