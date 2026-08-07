@@ -39,18 +39,18 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
 		// 桌面背景图片（支持单张或多张随机）
 		// desktop: "assets/images/DesktopWallpaper/d1.avif",
 		desktopDark: [
-			"https://img.202886.xyz/file/1786108545071_spider4-cover.jpg",
-			"https://img.202886.xyz/file/1786107056479_spider-bg3.jpg",
+			"https://img.202886.xyz/file/1786119161003_spider4-cover.jpg",
+			"https://img.202886.xyz/file/1786119160784_spider-bg3.jpg",
 		],
 		desktop: [
-			"https://img.202886.xyz/file/1786107051504_spider-bg.jpg",
+			"https://img.202886.xyz/file/1786119035547_spider-bg.jpg",
 		],
 		// 移动背景图片（支持单张或多张随机）
-		// mobile: "https://img.202886.xyz/file/1786107051504_spider-bg.jpg",
+		// mobile: "https://img.202886.xyz/file/1786119035547_spider-bg.jpg",
 		mobile: [
-			"https://img.202886.xyz/file/1786107051504_spider-bg.jpg",
-			"https://img.202886.xyz/file/1786107057058_spider-bg2.jpg",
-			"https://img.202886.xyz/file/1786107056479_spider-bg3.jpg",
+			"https://img.202886.xyz/file/1786119035547_spider-bg.jpg",
+			"https://img.202886.xyz/file/1786119177163_spider-bg2.jpg",
+			"https://img.202886.xyz/file/1786119160784_spider-bg3.jpg",
 		],
 		// 背景视频播放地址
 		// 支持单个视频路径（字符串）或多个视频循环（数组，参考上面壁纸配置）
