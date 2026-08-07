@@ -1,29 +1,47 @@
 # 关于我 / About Me
 
-你好！我是 **夏叶** ，一个在数字世界中默默无闻的一片叶子。
-
-## 🛠️ 关于本站
-
-这个网站使用 **Astro** 框架构建，采用了 [Firefly](https://github.com/CuteLeaf/Firefly) 模板，Firefly 是基于 [Fuwari](https://github.com/saicaca/fuwari) 的二次开发。
-
-**Firefly** 是一款基于 Astro 框架和 Fuwari 模板开发的清新美观且现代化个人博客主题模板，专为技术爱好者和内容创作者设计。该主题融合了现代 Web 技术栈，提供了丰富的功能模块和高度可定制的界面，让您能够轻松打造出专业且美观的个人博客网站。
-
-
-**🖥️在线预览： [Firefly - Demo site](https://firefly.cuteleaf.cn/)**
-
-**🏠我的博客： [https://blog.cuteleaf.cn](https://blog.cuteleaf.cn/)**
-
-**📝Firefly使用文档： [https://docs-firefly.cuteleaf.cn](https://docs-firefly.cuteleaf.cn/)**
-
-**⭐Firefly开源地址：[https://github.com/CuteLeaf/Firefly](https://github.com/CuteLeaf/Firefly)** 
-
-**⭐Fuwari开源地址：[https://github.com/saicaca/fuwari](https://github.com/saicaca/fuwari)**
-
-::github{repo="CuteLeaf/Firefly"}
-
-::github{repo="saicaca/fuwari"}
+我是 **Ustinus**（Jinheng Jiang），一名正从大二走向大三的本科生，就读于郑州大学通信工程专业，计划在新学期转入计算机科学与技术。如今正备考 28 考研 408，会在这里记下笔记，也记下沿途的思索。
 
 ---
 
-*感谢你的来访！希望在这里能找到对你有用的内容！*
+## 游戏与我
 
+我痴迷于那些需要反复磨砺身手的动作游戏——魂系列、怪物猎人、鬼泣、忍龙，还有那个在纽约高楼间荡来荡去的蜘蛛侠。它们于我，不仅是消遣，更是某种淬炼。
+
+- 🥊 街霸 6，不知火舞曾打到大师 1846 分  
+- 🏆 艾尔登法环·黑夜君临，单通 9999  
+- 🎯 深夜五追踪者，单通 20 连胜  
+
+在最晦暗的时日里，是这些光影交错的战场给了我喘息的缝隙，也让我重新拾回对自己的相信。如今心境已转，它们也完成了那段特别的使命——剩下的，是在学业与生活的间隙里，替我守住清醒与愉快。于是我把 95% 的精力收回到主线上来，想在计算机的世界里扎根，长久地发光。
+
+---
+
+## 关于本站
+
+这里用 **Astro** + [Firefly](https://github.com/CuteLeaf/Firefly) 主题搭建，部署在 **Cloudflare Workers**，图片存放于 R2，评论则交由 Giscus 承载。
+
+---
+
+## 在哪找到我
+
+- 🎮 Bilibili：[空间主页](https://space.bilibili.com/449130440)  
+- 💻 GitHub：[YCstudent](https://github.com/YCstudent)
+
+---
+
+## 致谢
+
+本站得益于 [Firefly](https://github.com/CuteLeaf/Firefly) 主题，也致敬 [Fuwari](https://github.com/saicaca/fuwari) 及所有开源路上的点灯人。
+
+---
+
+## 一个小目标
+
+心之所向，是上海交大的计算机系。我会拼尽全力奔去，但也明白，人生从不只凭一张录取通知书定义。若得偿所愿，是幸；若擦肩而过，便换条路继续走——路在脚下，步步皆是风景。
+
+> The night breaks. The light rises.
+> 星裂长夜，光破重霄！
+
+---
+
+感谢来访，愿这里的文字，能予你一丝光亮或共鸣。
