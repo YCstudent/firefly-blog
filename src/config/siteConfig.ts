@@ -6,27 +6,26 @@ const SITE_LANG = "zh_CN";
 
 export const siteConfig: SiteConfig = {
 	// 站点标题
-	title: "Firefly",
+	title: "Ustinus",
 
 	// 站点副标题
-	subtitle: "Demo site",
+	subtitle: "学习 · 记录 · 分享",
 
 	// 站点 URL
 	site_url: "https://ustinus.202886.xyz",
 
 	// 站点描述
 	description:
-		"Firefly 是一款基于 Astro 框架和 Fuwari 模板开发的清新美观且现代化个人博客主题模板，专为技术爱好者和内容创作者设计。该主题融合了现代 Web 技术栈，提供了丰富的功能模块和高度可定制的界面，让您能够轻松打造出专业且美观的个人博客网站。",
+		"个人博客，记录技术学习、项目实践与生活思考。基于 Astro 和 Firefly 主题构建。",
 
 	// 站点关键词
 	keywords: [
-		"Firefly",
-		"Fuwari",
-		"Astro",
-		"ACGN",
 		"博客",
 		"技术博客",
-		"静态博客",
+		"前端",
+		"Astro",
+		"编程",
+		"个人博客",
 	],
 
 	// 主题色
@@ -93,7 +92,7 @@ export const siteConfig: SiteConfig = {
 	},
 
 	// 站点开始日期，用于统计运行天数
-	siteStartDate: "2025-01-01",
+	siteStartDate: "2026-08-07",
 
 	// 站点时区（IANA 时区字符串），用于格式化bangumi、rss里的构建日期时间等等..
 	// 示例："Asia/Shanghai", "UTC", 如果为空，则按照构建服务器的时区进行时区转换
