@@ -39,17 +39,17 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
 		// 桌面背景图片（支持单张或多张随机）
 		// desktop: "assets/images/DesktopWallpaper/d1.avif",
 		desktop: [
-			"/assets/images/spider-bg.jpg",
-			"/assets/images/spider-bg3.jpg",
-			"/assets/images/spider-bg4.jpg",
+			"https://cloudflare-imgbed.2917321268.workers.dev/file/1786102773167_spider-bg.jpg",
+			"https://cloudflare-imgbed.2917321268.workers.dev/file/1786102785951_spider-bg3.jpg",
+			"https://cloudflare-imgbed.2917321268.workers.dev/file/1786102790115_spider-bg4.jpg",
 		],
 		// 移动背景图片（支持单张或多张随机）
-		// mobile: "/assets/images/spider-bg.jpg",
+		// mobile: "https://cloudflare-imgbed.2917321268.workers.dev/file/1786102773167_spider-bg.jpg",
 		mobile: [
-			"/assets/images/spider-bg.jpg",
-			"/assets/images/spider-bg2.jpg",
-			"/assets/images/spider-bg3.jpg",
-			"/assets/images/spider-bg4.jpg",
+			"https://cloudflare-imgbed.2917321268.workers.dev/file/1786102773167_spider-bg.jpg",
+			"https://cloudflare-imgbed.2917321268.workers.dev/file/1786102789091_spider-bg2.jpg",
+			"https://cloudflare-imgbed.2917321268.workers.dev/file/1786102785951_spider-bg3.jpg",
+			"https://cloudflare-imgbed.2917321268.workers.dev/file/1786102790115_spider-bg4.jpg",
 		],
 		// 背景视频播放地址
 		// 支持单个视频路径（字符串）或多个视频循环（数组，参考上面壁纸配置）

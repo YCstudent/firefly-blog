@@ -6,7 +6,7 @@ description: Firefly 是一款基于 Astro 框架和 Fuwari 模板开发的清�
 tags: [Markdown, Firefly, 博客, 主题, 模板]
 category: 文章示例
 # image: ./images/firefly2.avif  # 原作者封面
-image: "/assets/images/cover-default.jpg"
+image: "https://cloudflare-imgbed.2917321268.workers.dev/file/1786102798516_cover-default.jpg"
 slug: firefly
 ---
 
