@@ -1,0 +1,12 @@
+{
+  "name": "firefly-proxy",
+  "main": "index.js",
+  "compatibility_date": "2025-01-01",
+  "workers_dev": false,
+  "routes": [
+    {
+      "pattern": "ustinus.202886.xyz",
+      "zone_id": "d1e3acce676c35e1292661396ff431d7"
+    }
+  ]
+}
