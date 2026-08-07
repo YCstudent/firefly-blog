@@ -204,9 +204,10 @@ export const siteConfig: SiteConfig = {
 		// 未列出的类型将按默认顺序排在后面
 		categoryOrder: ["game", "real", "book"],
 		// 控制各分类的启用状态（true/false），未指定的分类默认启用
-		// categories: {
-		// 	game: false, // 禁用游戏分类显示
-		// },
+		categories: {
+			anime: false,
+			music: false,
+		},
 	},
 
 	// 追番配置（Bilibili + TMDB）
