@@ -33,10 +33,5 @@
   "src:content/posts/images/1.avif": "b5b0b3bcb6bbe0e0df",
   "src:content/posts/guide/cover.avif": "c8bca9dde6d2babfb5",
   "src:assets/images/logo/firefly-light.png": "000000000000000000",
-  "src:assets/images/logo/firefly-dark.png": "ffffffffffffffffff",
-  "public:assets/images/spider-bg.jpg": "7c5d6bd9bbc37d4e64",
-  "public:assets/images/spider-bg2.jpg": "b17c72d4ab8d521a19",
-  "public:assets/images/spider-bg3.jpg": "2b3858222c4b362745",
-  "public:assets/images/avatar.jpg": "453c4c5c2d41643949",
-  "public:assets/images/cover-default.jpg": "c0a29ebda3968c726e"
+  "src:assets/images/logo/firefly-dark.png": "ffffffffffffffffff"
 }
