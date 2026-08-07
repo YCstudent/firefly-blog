@@ -38,12 +38,16 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
 	src: {
 		// 桌面背景图片（支持单张或多张随机）
 		// desktop: "assets/images/DesktopWallpaper/d1.avif",
-		desktop: "/assets/images/spider-bg.jpg",
+		desktop: [
+			"/assets/images/spider-bg.jpg",
+			"/assets/images/spider-bg3.jpg",
+		],
 		// 移动背景图片（支持单张或多张随机）
 		// mobile: "/assets/images/spider-bg.jpg",
 		mobile: [
 			"/assets/images/spider-bg.jpg",
 			"/assets/images/spider-bg2.jpg",
+			"/assets/images/spider-bg3.jpg",
 		],
 		// 背景视频播放地址
 		// 支持单个视频路径（字符串）或多个视频循环（数组，参考上面壁纸配置）
