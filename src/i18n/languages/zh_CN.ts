@@ -113,7 +113,7 @@ export const zh_CN: Translation = {
 
 	// 个人爱好筛选和状态文本
 	[Key.bangumiTitle]: "个人爱好",
-	[Key.bangumiSubtitle]: "玩过的游戏，读过的书。",
+	[Key.bangumiSubtitle]: "玩过的游戏，看过的动漫。",
 	[Key.bangumiFilterAll]: "全部",
 	[Key.bangumiFilterWatched]: "看过",
 	[Key.bangumiFilterWatching]: "在看",
