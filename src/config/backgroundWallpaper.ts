@@ -41,6 +41,7 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
 		desktop: [
 			"https://img.202886.xyz/file/1786107051504_spider-bg.jpg",
 			"https://img.202886.xyz/file/1786107056479_spider-bg3.jpg",
+			"https://img.202886.xyz/file/1786108545071_spider4-cover.jpg",
 		],
 		// 移动背景图片（支持单张或多张随机）
 		// mobile: "https://img.202886.xyz/file/1786107051504_spider-bg.jpg",
@@ -48,6 +49,7 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
 			"https://img.202886.xyz/file/1786107051504_spider-bg.jpg",
 			"https://img.202886.xyz/file/1786107057058_spider-bg2.jpg",
 			"https://img.202886.xyz/file/1786107056479_spider-bg3.jpg",
+			"https://img.202886.xyz/file/1786108545071_spider4-cover.jpg",
 		],
 		// 背景视频播放地址
 		// 支持单个视频路径（字符串）或多个视频循环（数组，参考上面壁纸配置）
