@@ -390,7 +390,7 @@ const hasMultipleImages =
             </div>
         ))}
         {backgroundImages.hasDarkVariant && backgroundImages.mobileDark.map((src, index) => (
-            <div class:list={["slide-item hidden dark:block lg:hidden", index === 0 && "active-dark"]} data-index={index}>
+            <div class:list={["slide-item hidden dark:block lg:hidden", index === 0 && "active"]} data-index={index}>
                 <ImageWrapper
                     alt="Mobile dark background image of the blog"
                     class="object-cover h-full w-full"
@@ -405,7 +405,7 @@ const hasMultipleImages =
             </div>
         ))}
         {backgroundImages.hasDarkVariant && backgroundImages.desktopDark.map((src, index) => (
-            <div class:list={["slide-item hidden dark:lg:block", index === 0 && "active-dark"]} data-index={index}>
+            <div class:list={["slide-item hidden dark:lg:block", index === 0 && "active"]} data-index={index}>
                 <ImageWrapper
                     id="banner-dark"
                     alt="Desktop dark background image of the blog"
