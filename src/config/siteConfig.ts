@@ -12,7 +12,7 @@ export const siteConfig: SiteConfig = {
 	subtitle: "Demo site",
 
 	// 站点 URL
-	site_url: "https://firefly-blog-4zg.pages.dev",
+	site_url: "https://ustinus.202886.xyz",
 
 	// 站点描述
 	description:
