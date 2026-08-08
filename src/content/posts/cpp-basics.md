@@ -1,7 +1,7 @@
 ---
-title: "C++ 基础教程——从 Hello World 开始"
+title: "C++ 基础教程——从 Hello World 到 STL"
 published: 2026-08-08
-description: "从零开始学 C++，涵盖语法基础、指针与内存、STL 容器、面向对象。第一篇：基础语法。"
+description: "从零开始学 C++，涵盖语法基础、指针与内存、STL 容器。一篇搞定 C++ 核心知识。"
 tags: ["C++", "编程", "408", "新手向"]
 category: "技术笔记"
 ---
@@ -343,12 +343,298 @@ int* p = &a;
 p = &b;           // p 现在指向 b，a 不变
 ```
 
-## 小结
+---
 
-这篇覆盖了 C++ 最基础的语法：变量、输入输出、运算符、条件、循环、数组、函数、指针入门。下一篇写**指针与内存管理**——动态分配、`new`/`delete`、智能指针，以及**STL 容器**——`vector`、`map`、`set` 的深入使用。
+## 指针与内存
 
-有想先看的内容，评论区告诉我。
+### 指针是什么
+
+指针存储的是**变量的地址**。三个核心操作：取地址 `&`、解引用 `*`、声明 `int* p`。
+
+```cpp
+int a = 10;
+int* p = &a;        // p 存 a 的地址
+cout << *p;         // 10（读 p 指向的值）
+*p = 20;            // 写 p 指向的值，a 变成 20
+```
+
+### 指针与数组
+
+数组名在大多数表达式中会退化成指向首元素的指针。
+
+```cpp
+int arr[5] = {10, 20, 30, 40, 50};
+int* p = arr;           // 等价于 int* p = &arr[0]
+
+cout << *p;             // 10
+cout << *(p + 1);       // 20
+cout << *(p + 2);       // 30
+
+// 这三种写法等价
+cout << arr[2];         // 下标
+cout << *(arr + 2);     // 指针偏移
+cout << p[2];           // 指针也可以用下标
+```
+
+`p + i` 不是地址加 i 个字节，而是加 `i * sizeof(int)` 个字节。指针做加减法会自动按类型大小缩放。
+
+### 指针与函数
+
+**传指针修改实参**：
+
+```cpp
+void swap(int* a, int* b) {
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
+int x = 10, y = 20;
+swap(&x, &y);           // x=20, y=10
+```
+
+**⚠️ 危险：不要返回局部变量的地址！**
+
+```cpp
+int* danger() {
+    int local = 10;
+    return &local;      // ✗ 函数返回后 local 已被销毁
+}
+```
+
+### 动态内存分配
+
+运行时决定大小用 `new` / `delete`。`new` 在堆上分配，必须手动释放。
+
+```cpp
+// 分配单个变量
+int* p = new int(42);
+delete p;
+
+// 分配数组
+int size;
+cin >> size;
+int* arr = new int[size];
+for (int i = 0; i < size; i++) arr[i] = i * 10;
+delete[] arr;           // 注意用 delete[]
+```
+
+**规则：一个 new 对应一个 delete，一个 new[] 对应一个 delete[]。** 忘记 delete = 内存泄漏。
+
+### 空指针与野指针
+
+```cpp
+int* p1 = nullptr;      // 空指针，不指向任何东西（推荐）
+int* p2;                // 未初始化，野指针，危险！
+int* p3 = new int(10);
+delete p3;
+p3 = nullptr;           // 好习惯：delete 后设为 nullptr
+```
+
+**最佳实践**：声明时立即初始化，delete 后设 nullptr，使用前检查。
+
+### const 与指针
+
+```cpp
+const int* p1 = &a;     // 不能通过 p1 改值，但可以改指向
+int* const p2 = &a;     // 不能改指向，但可以改值
+const int* const p3 = &a; // 都不能改
+```
+
+记忆：`const` 在 `*` 左边 = 不能改值，`const` 在 `*` 右边 = 不能改指向。
+
+### 智能指针入门
+
+C++11 引入，自动管理内存，告别手动 `new`/`delete`：
+
+```cpp
+#include <memory>
+
+// unique_ptr：独占所有权，不能拷贝
+unique_ptr<int> p1 = make_unique<int>(10);
+cout << *p1;               // 10
+
+// shared_ptr：共享所有权，引用计数归零时自动释放
+shared_ptr<int> s1 = make_shared<int>(20);
+shared_ptr<int> s2 = s1;       // 引用计数 = 2
+```
+
+现代 C++ 中，能用智能指针就别用裸指针。
 
 ---
 
-*本文参考了 C++ Primer、cppreference.com 以及个人学习笔记整理。*
+## STL 容器
+
+STL（Standard Template Library）核心是**容器 + 算法 + 迭代器**。408 考研用 STL 描述算法比手写 C 风格代码干净很多。
+
+### vector：动态数组
+
+```cpp
+#include <vector>
+
+vector<int> v = {1, 2, 3, 4};
+
+v.push_back(5);              // 末尾添加
+v.pop_back();                // 末尾删除
+v.insert(v.begin() + 1, 99); // 在索引 1 处插入 99
+v.erase(v.begin() + 1);      // 删除索引 1
+
+cout << v[0];                // 1
+cout << v.front();           // 第一个
+cout << v.back();            // 最后一个
+cout << v.size();            // 大小
+
+v.reserve(100);              // 预留 100 个空间，避免反复扩容
+
+// 遍历
+for (int x : v) cout << x << " ";
+for (size_t i = 0; i < v.size(); i++) cout << v[i] << " ";
+```
+
+**扩容机制**：当 `size == capacity` 时，push_back 触发扩容（通常是 2 倍），拷贝旧元素到新内存。知道大概要存多少时提前 `reserve`。
+
+### string
+
+```cpp
+string s = "hello";
+s += " world";                // 拼接
+cout << s.length();           // 12
+string sub = s.substr(0, 5);  // "hello"
+size_t pos = s.find("world"); // 6（首次出现的位置）
+s.replace(0, 5, "Hi");       // 替换
+
+// 转换
+int num = stoi("123");            // string → int
+double d = stod("3.14");         // string → double
+string str = to_string(123);     // int → string
+```
+
+### map：键值对
+
+```cpp
+#include <map>
+#include <unordered_map>
+
+map<string, int> scores;
+scores["Alice"] = 90;
+scores["Bob"] = 85;
+cout << scores["Alice"];       // 90
+
+// 遍历（按键排序）
+for (auto& [name, score] : scores)
+    cout << name << ": " << score << endl;
+
+// 查找（不插入）
+auto it = scores.find("Bob");
+if (it != scores.end()) cout << it->second;
+
+scores.erase("Bob");           // 删除
+```
+
+`map` 底层是红黑树，按键排序。**注意**：`scores["new_key"]` 如果 key 不存在会自动插入默认值；只查值不插入用 `find()`。
+
+`unordered_map` 基于哈希表，O(1) 操作，不排序。能用它就别用 `map`，除非需要排序。
+
+### set：有序集合
+
+```cpp
+#include <set>
+#include <unordered_set>
+
+set<int> s = {3, 1, 4, 1, 5};     // 自动排序去重 → {1, 3, 4, 5}
+s.insert(2);                        // 插入
+s.erase(3);                         // 删除
+if (s.count(4)) cout << "存在";     // 查找
+```
+
+`set` 底层也是红黑树，O(log n)。`unordered_set` 基于哈希表，O(1)。
+
+### stack、queue、deque
+
+```cpp
+#include <stack>
+#include <queue>
+#include <deque>
+
+// stack：后进先出
+stack<int> st;
+st.push(1); st.push(2);
+cout << st.top();       // 2
+st.pop();
+
+// queue：先进先出
+queue<int> q;
+q.push(1); q.push(2);
+cout << q.front();      // 1
+q.pop();
+
+// priority_queue：大顶堆（默认）
+priority_queue<int> pq;
+pq.push(3); pq.push(1);
+cout << pq.top();       // 3（最大）
+
+// 小顶堆
+priority_queue<int, vector<int>, greater<int>> minHeap;
+
+// deque：双端队列
+deque<int> dq = {2, 3};
+dq.push_front(1);        // 头插 → {1, 2, 3}
+dq.push_back(4);         // 尾插 → {1, 2, 3, 4}
+```
+
+### 常用算法
+
+```cpp
+#include <algorithm>
+
+vector<int> v = {3, 1, 4, 1, 5, 9, 2, 6};
+
+sort(v.begin(), v.end());                    // 升序
+sort(v.begin(), v.end(), greater<int>());    // 降序
+
+auto it = find(v.begin(), v.end(), 5);       // 找第一个 5
+bool found = binary_search(v.begin(), v.end(), 5);  // 二分查找
+int cnt = count(v.begin(), v.end(), 1);      // 出现了几次
+auto maxIt = max_element(v.begin(), v.end());// 最大元素
+
+reverse(v.begin(), v.end());                 // 反转
+fill(v.begin(), v.end(), 0);                 // 全填 0
+
+// 去重：先排序，再 unique + erase
+sort(v.begin(), v.end());
+auto last = unique(v.begin(), v.end());
+v.erase(last, v.end());
+```
+
+**Lambda 表达式**在算法中非常常用：
+
+```cpp
+// 按字符串长度排序
+vector<string> words = {"apple", "banana", "kiwi", "pear"};
+sort(words.begin(), words.end(), [](const string& a, const string& b) {
+    return a.length() < b.length();
+});
+// → {"kiwi", "pear", "apple", "banana"}
+```
+
+### 容器选择指南
+
+| 场景 | 推荐容器 |
+|------|----------|
+| 动态数组，随机访问 | `vector` |
+| 键值对查找 | `unordered_map`（O(1)）或 `map`（有序） |
+| 去重 + 查找 | `unordered_set`（O(1)）或 `set`（有序） |
+| 后进先出 | `stack` |
+| 先进先出 | `queue` |
+| 优先级队列 | `priority_queue` |
+
+---
+
+## 总结
+
+这篇文章覆盖了 C++ 核心三块：**基础语法 → 指针与内存 → STL 容器**。后续会补充面向对象（类、继承、多态、虚函数）的内容。
+
+文章会持续完善。有想先看的内容，评论区告诉我。
+
+---
+
+*参考：C++ Primer、cppreference.com、Effective Modern C++*
