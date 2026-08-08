@@ -629,11 +629,325 @@ sort(words.begin(), words.end(), [](const string& a, const string& b) {
 
 ---
 
+---
+
+## 面向对象
+
+C++ 的面向对象有四大核心：**封装、继承、多态、抽象**。这一节从类的基本语法讲到虚函数。
+
+### 类与对象
+
+类是把数据和操作数据的方法打包在一起的蓝图。对象是类的实例。
+
+```cpp
+class Student {
+private:                          // 私有成员，外部不能直接访问
+    string name;
+    int age;
+    double gpa;
+
+public:                           // 公有成员，外部可以访问
+    // 构造函数：创建对象时自动调用
+    Student(string n, int a, double g) {
+        name = n;
+        age = a;
+        gpa = g;
+    }
+
+    // 成员函数
+    void introduce() {
+        cout << "我叫 " << name << ", " << age << " 岁, GPA: " << gpa << endl;
+    }
+
+    // getter / setter：封装私有成员的安全访问
+    string getName() { return name; }
+    void setAge(int a) {
+        if (a > 0 && a < 150) age = a;
+    }
+};
+
+// 使用
+Student alice("Alice", 20, 3.8);
+alice.introduce();              // 我叫 Alice, 20 岁, GPA: 3.8
+cout << alice.getName();        // "Alice"
+```
+
+**访问控制：**
+
+| 关键字 | 含义 |
+|--------|------|
+| `private` | 只有本类内部能访问 |
+| `protected` | 本类和子类能访问 |
+| `public` | 外部也能访问 |
+
+**封装的原则**：把数据设为 `private`，通过 `public` 方法提供受控访问。外部不需要知道内部怎么存的，只关心能做什么。
+
+### 构造函数
+
+```cpp
+class Point {
+private:
+    int x, y;
+
+public:
+    // 默认构造函数
+    Point() : x(0), y(0) {}
+
+    // 带参构造函数（用初始化列表）
+    Point(int xVal, int yVal) : x(xVal), y(yVal) {}
+
+    // 拷贝构造函数
+    Point(const Point& other) : x(other.x), y(other.y) {}
+
+    // 委托构造（C++11）
+    Point(int val) : Point(val, val) {}  // 调用上面的构造函数
+
+    void print() {
+        cout << "(" << x << ", " << y << ")" << endl;
+    }
+};
+
+Point p1;               // 默认构造 → (0, 0)
+Point p2(3, 4);         // 带参构造 → (3, 4)
+Point p3(p2);           // 拷贝构造 → (3, 4)
+Point p4(5);            // 委托构造 → (5, 5)
+```
+
+**初始化列表** `: x(xVal), y(yVal)` 比在构造函数体内赋值更高效——直接在内存中初始化，而不是先默认初始化再覆盖。
+
+### 析构函数
+
+对象销毁时自动调用，用于释放资源。
+
+```cpp
+class FileHandler {
+private:
+    FILE* file;
+
+public:
+    FileHandler(const string& path) {
+        file = fopen(path.c_str(), "r");
+    }
+
+    ~FileHandler() {                        // 析构函数
+        if (file) fclose(file);
+        cout << "文件已关闭" << endl;
+    }
+};
+
+// 离开作用域自动调用析构函数
+{
+    FileHandler fh("data.txt");     // 构造
+}                                   // 析构在这里自动调用
+```
+
+这就是 C++ 的 **RAII**（资源获取即初始化）——在构造函数中获取资源，在析构函数中释放。智能指针就是这个原理。
+
+### this 指针
+
+每个成员函数都有一个隐式的 `this` 指针，指向调用该函数的对象。
+
+```cpp
+class Counter {
+private:
+    int count;
+
+public:
+    Counter& increment() {      // 返回引用支持链式调用
+        count++;
+        return *this;           // this 指向当前对象
+    }
+
+    int getCount() { return count; }
+};
+
+Counter c;
+c.increment().increment().increment();   // 链式调用
+cout << c.getCount();                    // 3
+```
+
+### 静态成员
+
+`static` 成员属于类本身，不属于某一个对象。所有对象共享同一份。
+
+```cpp
+class Student {
+private:
+    string name;
+    static int totalCount;          // 静态成员变量，在类外定义
+
+public:
+    Student(string n) : name(n) {
+        totalCount++;
+    }
+
+    static int getTotal() {         // 静态成员函数
+        return totalCount;          // 只能访问静态成员
+    }
+};
+
+int Student::totalCount = 0;        // 类外定义（必须在 .cpp 文件或类外）
+
+Student s1("Alice"), s2("Bob");
+cout << Student::getTotal();        // 2，通过类名调用
+```
+
+### 继承
+
+子类继承父类的成员，可以复用代码和建立层次关系。
+
+```cpp
+class Animal {
+protected:
+    string name;
+
+public:
+    Animal(string n) : name(n) {}
+    void eat() { cout << name << " 在吃东西" << endl; }
+};
+
+class Dog : public Animal {      // public 继承
+private:
+    string breed;
+
+public:
+    Dog(string n, string b) : Animal(n), breed(b) {}
+
+    void bark() { cout << name << " 汪汪叫" << endl; }
+    // name 可以访问，因为它是 protected
+};
+
+Dog dog("旺财", "金毛");
+dog.eat();                  // 继承自 Animal → "旺财 在吃东西"
+dog.bark();                 // Dog 自己的方法 → "旺财 汪汪叫"
+```
+
+**继承方式：**
+
+| 继承方式 | 父类 public → 子类 | 父类 protected → 子类 | 父类 private → 子类 |
+|----------|------|------|------|
+| `public` | public | protected | 不可访问 |
+| `protected` | protected | protected | 不可访问 |
+| `private` | private | private | 不可访问 |
+
+99% 的情况用 `public` 继承。
+
+### 多态与虚函数
+
+多态的核心：**基类指针或引用调用虚函数时，实际执行的是派生类的版本。**
+
+```cpp
+class Shape {
+public:
+    virtual double area() = 0;       // 纯虚函数——抽象类，不能实例化
+    virtual ~Shape() {}              // 虚析构函数（基类必须）
+};
+
+class Circle : public Shape {
+private:
+    double radius;
+public:
+    Circle(double r) : radius(r) {}
+    double area() override {         // override 表示重写
+        return 3.14159 * radius * radius;
+    }
+};
+
+class Rectangle : public Shape {
+private:
+    double width, height;
+public:
+    Rectangle(double w, double h) : width(w), height(h) {}
+    double area() override {
+        return width * height;
+    }
+};
+
+// 多态使用
+vector<unique_ptr<Shape>> shapes;
+shapes.push_back(make_unique<Circle>(5.0));
+shapes.push_back(make_unique<Rectangle>(3.0, 4.0));
+
+for (auto& s : shapes) {
+    cout << s->area() << endl;   // 输出各自面积
+    // Circle 输出 78.5398，Rectangle 输出 12
+}
+// 同一个 Shape* 调用 area()，实际行为取决于运行时类型——这就是多态
+```
+
+**虚函数关键点：**
+
+- `virtual` 声明虚函数，`override` 表示重写（C++11，推荐使用）
+- `= 0` 表示纯虚函数，拥有纯虚函数的类叫抽象类，不能实例化
+- 基类的析构函数必须是虚函数——否则 `delete` 基类指针时不会调用子类析构函数，造成资源泄漏
+
+### 运算符重载
+
+让自定义类型也能用 `+`、`<`、`<<` 等运算符。
+
+```cpp
+class Vector2D {
+private:
+    double x, y;
+public:
+    Vector2D(double x, double y) : x(x), y(y) {}
+
+    // 成员函数重载 + 
+    Vector2D operator+(const Vector2D& other) const {
+        return Vector2D(x + other.x, y + other.y);
+    }
+
+    // 友元函数重载 << 输出
+    friend ostream& operator<<(ostream& os, const Vector2D& v) {
+        os << "(" << v.x << ", " << v.y << ")";
+        return os;
+    }
+};
+
+Vector2D v1(1, 2), v2(3, 4);
+Vector2D v3 = v1 + v2;    // (4, 6)
+cout << v3;                // (4, 6)
+```
+
+### 友元
+
+友元函数或友元类可以访问当前类的私有成员。
+
+```cpp
+class Box {
+private:
+    int width;
+public:
+    Box(int w) : width(w) {}
+    friend void printWidth(Box& b);   // 友元函数
+    friend class BoxInspector;        // 友元类
+};
+
+void printWidth(Box& b) {
+    cout << b.width;        // 可以访问 private 成员
+}
+```
+
+友元不是偷懒手段，滥用会破坏封装。主要用于运算符重载和紧密相关的类之间。
+
+---
+
 ## 总结
 
-这篇文章覆盖了 C++ 核心三块：**基础语法 → 指针与内存 → STL 容器**。后续会补充面向对象（类、继承、多态、虚函数）的内容。
+这篇文章覆盖了 C++ 核心四块：
 
-文章会持续完善。有想先看的内容，评论区告诉我。
+| 部分 | 内容 |
+|------|------|
+| 基础语法 | 变量、输入输出、运算符、条件循环、数组、函数、引用 |
+| 指针与内存 | 指针运算、动态分配、const 指针、智能指针 |
+| STL 容器 | vector、string、map、set、stack、queue、算法 |
+| 面向对象 | 类、构造函数、继承、多态、虚函数、运算符重载 |
+
+文章会持续完善和修正。有错误或建议，评论区告诉我。
+
+---
+
+*参考：C++ Primer、cppreference.com、Effective Modern C++、C++ Core Guidelines*
 
 ---
 
