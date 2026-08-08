@@ -1,16 +1,68 @@
 ---
-title: "C++ 基础教程——从 Hello World 到 STL"
+title: "C++ 基础教程——从零基础到熟练工！"
 published: 2026-08-08
-description: "从零开始学 C++，涵盖语法基础、指针与内存、STL 容器。一篇搞定 C++ 核心知识。"
+description: "从零开始学 C++，涵盖语法基础、指针与内存、STL 容器、面向对象。一篇搞定 C++ 核心知识。"
 tags: ["C++", "编程", "408", "新手向"]
 category: "技术笔记"
 ---
 
+## 环境配置
+
+### Windows：MSYS2 + gcc
+
+1. 下载 [MSYS2](https://www.msys2.org/) 并安装（安装到 50% 可能卡住，等十分钟就好）
+2. 打开 MSYS2 UCRT64 终端，安装 gcc：
+
+```bash
+pacman -S mingw-w64-ucrt-x86_64-gcc
+```
+
+3. 配置环境变量：Win 键 → 搜「编辑系统环境变量」→ 环境变量 → Path → 新建 → 粘贴 `C:\msys64\ucrt64\bin`
+4. 重启 VSCode，终端输入 `g++ --version` 检查
+
+> 报「无法将 g++ 项识别为 cmdlet」说明环境变量没配对。中文用户名导致编译报错的话，在环境变量中把 `TEMP` 和 `TMP` 改为不含中文的路径（如 `C:\temp`），用户变量和系统变量都要改。
+
+### macOS：Homebrew + gcc
+
+```bash
+# 安装 Homebrew
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# 自带 clang 即可用，想用正统 gcc：
+brew install gcc
+# 之后编译指令改为 g++-14（版本号看安装提示）
+```
+
+### Ubuntu
+
+```bash
+sudo apt install g++
+g++ --version    # 检查
+```
+
+### 编译与运行
+
+```bash
+g++ test.cpp -o test -O2 --std=c++20 -Wall    # 编译
+./test                                        # 运行
+```
+
+参数：`-o` 指定输出文件名，`-O2` 优化，`--std=c++20` C++20 标准，`-Wall` 显示所有警告。
+
+### VSCode 推荐
+
+- 插件：Chinese、C/C++、FiraCode 字体、One Monokai 主题
+- `editor.tabSize`: 2
+- `files.autoSave`: onFocusChange
+- `C_Cpp.default.cppStandard`: gnu++20
+
+---
+
 ## 为什么学 C++
 
-408 考研考 C++ 描述的算法，游戏引擎用 C++ 写底层，操作系统内核也是 C++。学 C++ 不是因为它简单——恰恰相反，它很复杂——而是因为它**离硬件近**，学懂了它能帮你理解计算机是怎么工作的。
+408 考研用 C++ 描述算法，游戏底层用 C++ 写，操作系统和数据库内核也是 C++。学 C++ 不是因为它简单——恰恰相反，它很复杂——而是因为它**离硬件近**，学懂了它能帮你理解计算机是怎么工作的。
 
-这篇文章从一个简单的程序开始，逐步展开 C++ 的核心语法。后续会持续更新指针、STL、面向对象等内容。
+这篇文章从一个简单的程序开始，逐步展开 C++ 的核心语法。
 
 ## 第一个程序
 
