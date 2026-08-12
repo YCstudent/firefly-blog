@@ -1,590 +1,749 @@
 <script>
-	import { onMount } from "svelte";
+import { onMount } from "svelte";
 
-	let turnstileRendered = false;
+let turnstileRendered = false;
 
-	let {
-		pageSlug = "",
-		apiUrl = "https://api.202886.xyz",
-		turnstileSitekey = "0x4AAAAAAEN2y0SVTceMvqdv",
-		adminUsernames = ["Ustinus"],
-	} = $props();
+let {
+	pageSlug = "",
+	apiUrl = "https://api.202886.xyz",
+	turnstileSitekey = "0x4AAAAAAEN2y0SVTceMvqdv",
+	adminUsernames = ["Ustinus"],
+} = $props();
 
-	const API = apiUrl.replace(/\/+$/, "");
-	let comments = $state([]);
-	let user = $state(null);
-	let token = $state("");
-	let content = $state("");
-	let loading = $state(true);
-	let submitting = $state(false);
-	let showLogin = $state(false);
-	let loginEmail = $state("");
-	let loginPassword = $state("");
-	let loginConfirm = $state("");
-	let loginError = $state("");
-	let registerMode = $state(false);
-	let registerName = $state("");
-	let showEmoji = $state(false);
-	let showPreview = $state(false);
-	let uploading = $state(false);
-	let verifyCode = $state("");
-	let showPassword = $state(false);
-	let showConfirmPassword = $state(false);
-	let emailVerified = $state(false);
-	let sendingCode = $state(false);
-	let verifying = $state(false);
-	let codeSent = $state(false);
-	let loggingIn = $state(false);
-	let registering = $state(false);
-	const isAdmin = () => user && adminUsernames.includes(user.username);
+const API = apiUrl.replace(/\/+$/, "");
+let comments = $state([]);
+let user = $state(null);
+let token = $state("");
+let content = $state("");
+let loading = $state(true);
+let submitting = $state(false);
+let showLogin = $state(false);
+let loginEmail = $state("");
+let loginPassword = $state("");
+let loginConfirm = $state("");
+let loginError = $state("");
+let registerMode = $state(false);
+let registerName = $state("");
+let showEmoji = $state(false);
+let showPreview = $state(false);
+let uploading = $state(false);
+let verifyCode = $state("");
+let showPassword = $state(false);
+let showConfirmPassword = $state(false);
+let emailVerified = $state(false);
+let sendingCode = $state(false);
+let verifying = $state(false);
+let codeSent = $state(false);
+let loggingIn = $state(false);
+let registering = $state(false);
+const isAdmin = () => user && adminUsernames.includes(user.username);
 
-	const emojis = [
-		"😀",
-		"😂",
-		"🤣",
-		"😊",
-		"😍",
-		"🤩",
-		"😎",
-		"🤔",
-		"😅",
-		"😭",
-		"🥳",
-		"😇",
-		"🙃",
-		"🤗",
-		"😴",
-		"🤐",
-		"😤",
-		"😡",
-		"💀",
-		"👻",
-		"👽",
-		"🤖",
-		"🎉",
-		"❤️",
-		"🔥",
-		"⭐",
-		"💯",
-		"✅",
-		"❌",
-		"🤝",
-		"👏",
-		"🙌",
-		"💪",
-		"🧠",
-		"👀",
-		"🌈",
-		"☀️",
-		"🌙",
-		"⚡",
-		"💧",
-		"🍕",
-		"🎮",
-		"📚",
-		"💻",
-		"🚀",
-		"🎯",
-		"🏆",
-		"👍",
-	];
+const emojis = [
+	"😀",
+	"😂",
+	"🤣",
+	"😊",
+	"😍",
+	"🤩",
+	"😎",
+	"🤔",
+	"😅",
+	"😭",
+	"🥳",
+	"😇",
+	"🙃",
+	"🤗",
+	"😴",
+	"🤐",
+	"😤",
+	"😡",
+	"💀",
+	"👻",
+	"👽",
+	"🤖",
+	"🎉",
+	"❤️",
+	"🔥",
+	"⭐",
+	"💯",
+	"✅",
+	"❌",
+	"🤝",
+	"👏",
+	"🙌",
+	"💪",
+	"🧠",
+	"👀",
+	"🌈",
+	"☀️",
+	"🌙",
+	"⚡",
+	"💧",
+	"🍕",
+	"🎮",
+	"📚",
+	"💻",
+	"🚀",
+	"🎯",
+	"🏆",
+	"👍",
+];
 
-	$effect(() => {
-		if (showLogin && !turnstileRendered) {
-			setTimeout(() => {
-				const el = document.getElementById("ts-container");
-				if (!el) return;
-				if (window.turnstile) {
-					el.innerHTML = "";
-					const div = document.createElement("div");
-					div.className = "cf-turnstile";
-					div.setAttribute("data-sitekey", turnstileSitekey);
-					el.appendChild(div);
-					const isDark = document.documentElement.classList.contains("dark");
-					window.turnstile.render(div, {
-						size: "normal",
-						theme: isDark ? "dark" : "light",
-					});
-					turnstileRendered = true;
-				}
-			}, 300);
-		}
-		if (!showLogin) turnstileRendered = false;
-	});
-
-	// Render KaTeX in preview when toggled on
-	$effect(() => {
-		if (showPreview && content) {
-			setTimeout(async () => {
-				const mathEls = document.querySelectorAll("[data-latex]:not([data-rendered])");
-				if (mathEls.length === 0) return;
-				if (!window.katex) {
-					if (!document.querySelector("#katex-css")) {
-						const link = document.createElement("link");
-						link.id = "katex-css";
-						link.rel = "stylesheet";
-						link.href = "https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css";
-						document.head.appendChild(link);
-					}
-					await new Promise((res) => {
-						const s = document.createElement("script");
-						s.src = "https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js";
-						s.onload = res;
-						document.head.appendChild(s);
-					});
-				}
-				mathEls.forEach((el) => {
-					try {
-						const latex = el.getAttribute("data-latex");
-						if (!latex) return;
-						window.katex.render(latex, el, { displayMode: el.classList.contains("katex-block"), throwOnError: false });
-						el.setAttribute("data-rendered", "1");
-					} catch (e) {}
+$effect(() => {
+	if (showLogin && !turnstileRendered) {
+		setTimeout(() => {
+			const el = document.getElementById("ts-container");
+			if (!el) return;
+			if (window.turnstile) {
+				el.innerHTML = "";
+				const div = document.createElement("div");
+				div.className = "cf-turnstile";
+				div.setAttribute("data-sitekey", turnstileSitekey);
+				el.appendChild(div);
+				const isDark = document.documentElement.classList.contains("dark");
+				window.turnstile.render(div, {
+					size: "normal",
+					theme: isDark ? "dark" : "light",
 				});
-			}, 150);
-		}
-	});
+				turnstileRendered = true;
+			}
+		}, 300);
+	}
+	if (!showLogin) turnstileRendered = false;
+});
 
-	onMount(async () => {
-		const savedToken = localStorage.getItem("ustinus_token") || "";
-		const savedUser = localStorage.getItem("ustinus_user");
-		if (savedToken && savedUser) {
-			token = savedToken;
-			user = JSON.parse(savedUser);
-		}
-		await loadComments();
-	});
-
-	async function loadComments() {
-		loading = true;
-		try {
-			const res = await fetch(
-				`${API}/api/comments?slug=${encodeURIComponent(pageSlug)}`,
+// Render KaTeX in preview when toggled on
+$effect(() => {
+	if (showPreview && content) {
+		setTimeout(async () => {
+			const mathEls = document.querySelectorAll(
+				"[data-latex]:not([data-rendered])",
 			);
-			const data = await res.json();
-			comments = data.comments || [];
-		} catch (e) {
-			console.error(e);
-		}
-		loading = false;
-	}
-
-	async function doLogin() {
-		loginError = "";
-		const tsToken = window.turnstile?.getResponse?.();
-		if (!tsToken) {
-			loginError = "请完成人机验证";
-			return;
-		}
-		loggingIn = true;
-		try {
-			const res = await fetch(`${API}/api/auth/login`, {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({
-					email: loginEmail,
-					password: loginPassword,
-					"cf-turnstile-response": tsToken,
-				}),
-			});
-			const data = await res.json();
-			if (data.error) {
-				loginError = data.error;
-				window.turnstile?.reset();
-				return;
-			}
-			user = data.user;
-			token = data.token;
-			localStorage.setItem("ustinus_token", token);
-			localStorage.setItem("ustinus_user", JSON.stringify(user));
-			showLogin = false;
-			loginEmail = "";
-			loginPassword = "";
-		} catch (e) {
-			loginError = "网络错误，请重试";
-			window.turnstile?.reset();
-		} finally {
-			loggingIn = false;
-		}
-	}
-
-	async function sendCode() {
-		sendingCode = true;
-		loginError = "";
-		try {
-			const res = await fetch(`${API}/api/auth/send-code`, {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ email: loginEmail }),
-			});
-			const data = await res.json();
-			if (data.error) {
-				loginError = data.error;
-			} else {
-				codeSent = true;
-				loginError = "";
-			}
-		} catch (e) {
-			loginError = "发送失败，请重试";
-		}
-		sendingCode = false;
-	}
-
-	async function verifyEmailCode() {
-		verifying = true;
-		loginError = "";
-		try {
-			const res = await fetch(`${API}/api/auth/verify-code`, {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ email: loginEmail, code: verifyCode }),
-			});
-			const data = await res.json();
-			if (data.error) {
-				loginError = data.error;
-			} else {
-				emailVerified = true;
-				loginError = "";
-			}
-		} catch (e) {
-			loginError = "验证失败，请重试";
-		}
-		verifying = false;
-	}
-
-	async function doRegister() {
-		loginError = "";
-		if (!registerName.trim()) {
-			loginError = "请输入用户名";
-			return;
-		}
-		if (registerName.trim().length < 2) {
-			loginError = "用户名至少 2 个字符";
-			return;
-		}
-		if (!loginEmail.includes("@")) {
-			loginError = "请输入有效邮箱";
-			return;
-		}
-		if (!emailVerified) {
-			loginError = "请先验证邮箱";
-			return;
-		}
-		if (loginPassword.length < 6) {
-			loginError = "密码至少 6 位";
-			return;
-		}
-		if (loginPassword !== loginConfirm) {
-			loginError = "两次密码不一致";
-			return;
-		}
-		const tsToken = window.turnstile?.getResponse?.();
-		if (!tsToken) {
-			loginError = "请完成人机验证";
-			return;
-		}
-		registering = true;
-		try {
-			const res = await fetch(`${API}/api/auth/register`, {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({
-					username: registerName.trim(),
-					email: loginEmail,
-					password: loginPassword,
-					"cf-turnstile-response": tsToken,
-				}),
-			});
-			const data = await res.json();
-			if (data.error) {
-				loginError = data.error;
-				window.turnstile?.reset();
-				return;
-			}
-			user = data.user;
-			token = data.token;
-			localStorage.setItem("ustinus_token", token);
-			localStorage.setItem("ustinus_user", JSON.stringify(user));
-			showLogin = false;
-			registerMode = false;
-			loginEmail = "";
-			loginPassword = "";
-			loginConfirm = "";
-			registerName = "";
-			verifyCode = "";
-			emailVerified = false;
-			codeSent = false;
-		} catch (e) {
-			loginError = "网络错误，请重试";
-			window.turnstile?.reset();
-		} finally {
-			registering = false;
-		}
-	}
-
-	async function doDeleteAccount() {
-		if (!confirm("确认注销账号？此操作不可撤销。")) return;
-		await fetch(`${API}/api/auth/account`, {
-			method: "DELETE",
-			headers: { Authorization: `Bearer ${token}` },
-		});
-		doLogout();
-	}
-
-	function doLogout() {
-		user = null;
-		token = "";
-		localStorage.removeItem("ustinus_token");
-		localStorage.removeItem("ustinus_user");
-	}
-
-	function insertEmoji(emoji) {
-		content += emoji;
-	}
-
-	async function handleImageUpload(e) {
-		const file = e.target.files?.[0];
-		if (!file) return;
-		uploading = true;
-		try {
-			const form = new FormData();
-			form.append("file", file);
-			const res = await fetch(`${API}/api/upload`, {
-				method: "POST",
-				headers: { Authorization: `Bearer ${token}` },
-				body: form,
-			});
-			const data = await res.json();
-			if (data.url) content += `\n![图片](${data.url})\n`;
-		} catch (e) {
-			console.error(e);
-		}
-		uploading = false;
-		e.target.value = "";
-	}
-
-	async function handleAvatarUpload(e) {
-		const file = e.target.files?.[0];
-		if (!file) return;
-		uploading = true;
-		try {
-			const form = new FormData();
-			form.append("file", file);
-			const res = await fetch(`${API}/api/auth/avatar`, {
-				method: "POST",
-				headers: { Authorization: `Bearer ${token}` },
-				body: form,
-			});
-			const data = await res.json();
-			if (data.url) {
-				user = { ...user, avatar_url: data.url };
-				localStorage.setItem("ustinus_user", JSON.stringify(user));
-				await loadComments();
-			}
-		} catch (e) {
-			console.error(e);
-		}
-		uploading = false;
-		e.target.value = "";
-	}
-
-	async function doSubmit() {
-		if (!content.trim() || submitting) return;
-		submitting = true;
-		await fetch(`${API}/api/comments`, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				Authorization: `Bearer ${token}`,
-			},
-			body: JSON.stringify({ page_slug: pageSlug, content: content.trim() }),
-		});
-		content = "";
-		submitting = false;
-		await loadComments();
-	}
-
-	async function doDelete(id) {
-		if (!confirm("确认删除？")) return;
-		await fetch(`${API}/api/comments/${id}`, {
-			method: "DELETE",
-			headers: { Authorization: `Bearer ${token}` },
-		});
-		await loadComments();
-	}
-
-	async function doPin(id, pinned) {
-		await fetch(`${API}/api/comments/${id}/pin`, {
-			method: "PATCH",
-			headers: {
-				"Content-Type": "application/json",
-				Authorization: `Bearer ${token}`,
-			},
-			body: JSON.stringify({ pinned }),
-		});
-		await loadComments();
-	}
-
-	function timeAgo(dateStr) {
-		const diff = Date.now() - new Date(dateStr.endsWith("Z") ? dateStr : dateStr + "Z").getTime();
-		const m = Math.floor(diff / 60000);
-		if (m < 1) return "刚刚";
-		if (m < 60) return `${m} 分钟前`;
-		const h = Math.floor(m / 60);
-		if (h < 24) return `${h} 小时前`;
-		return new Date(dateStr).toLocaleDateString("zh-CN");
-	}
-
-	function renderContent(text) {
-		if (!text) return "";
-		let html = text
-			.replace(/&/g, "&amp;")
-			.replace(/</g, "&lt;")
-			.replace(/>/g, "&gt;");
-
-		// KaTeX math ($...$ inline, $$...$$ block) — before other processing
-		html = html.replace(/\$\$([\s\S]*?)\$\$/g, (_, m) => `<div class="katex-block my-3" data-latex="${escapeAttr(m.trim())}"></div>`);
-		html = html.replace(/\$(.+?)\$/g, (_, m) => `<span class="katex-inline" data-latex="${escapeAttr(m.trim())}"></span>`);
-
-		// Code blocks (``` ... ```)
-		html = html.replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => {
-			return `<pre class="my-3 p-3 rounded-lg overflow-x-auto text-sm" style="background:var(--btn-regular-bg)"><code>${code.trim()}</code></pre>`;
-		});
-
-		// Inline code (`...`)
-		html = html.replace(/`([^`]+)`/g, '<code class="px-1 py-0.5 rounded text-sm" style="background:var(--btn-regular-bg);color:var(--primary)">$1</code>');
-
-		// Images ![alt](url)
-		html = html.replace(/!\[([^\]]*)\]\((\S+)\)/g, '<img src="$2" alt="$1" class="max-w-full rounded-lg my-2" loading="lazy" />');
-
-		// Links [text](url)
-		html = html.replace(/\[([^\]]+)\]\((\S+)\)/g, '<a href="$2" target="_blank" rel="noopener" class="underline" style="color:var(--primary)">$1</a>');
-
-		// Task lists (must be before regular lists)
-		html = html.replace(/^[\-\*] \[(x|X| )\] (.+)$/gm, (_, checked, text) =>
-			checked.trim() ? '<li class="task-done">&#9745; <del>' + text + '</del></li>' : '<li class="task-pending">&#9744; ' + text + '</li>'
-		);
-
-		// Tables — detect and render GFM tables
-		html = renderTables(html);
-
-		// Headers
-		html = html.replace(/^###### (.+)$/gm, '<h6 class="text-sm font-semibold mt-3 mb-1">$1</h6>');
-		html = html.replace(/^##### (.+)$/gm, '<h5 class="text-sm font-semibold mt-3 mb-1">$1</h5>');
-		html = html.replace(/^#### (.+)$/gm, '<h4 class="text-base font-semibold mt-3 mb-1">$1</h4>');
-		html = html.replace(/^### (.+)$/gm, '<h3 class="text-lg font-semibold mt-4 mb-2">$1</h3>');
-		html = html.replace(/^## (.+)$/gm, '<h2 class="text-xl font-semibold mt-4 mb-2">$1</h2>');
-		html = html.replace(/^# (.+)$/gm, '<h1 class="text-2xl font-bold mt-4 mb-2">$1</h1>');
-
-		// Horizontal rules
-		html = html.replace(/^(---|\*\*\*)\s*$/gm, '<hr class="my-3" style="border-color:var(--line-divider)" />');
-
-		// Callouts / admonitions: > [!TYPE] Title
-		const calloutTypes = ['note','tip','important','warning','caution','info','success','check','done','question','help','faq','attention','danger','error','bug','example','quote','abstract','summary','tldr','todo','failure','missing','fail','cite'];
-		const calloutColors = { note:'#0969da', tip:'#1a7f37', important:'#8250df', warning:'#9a6700', caution:'#cf222e', info:'#0969da', success:'#1a7f37', check:'#1a7f37', done:'#8250df', question:'#1a7f37', help:'#0969da', faq:'#1a7f37', attention:'#cf222e', danger:'#cf222e', error:'#cf222e', bug:'#cf222e', example:'#8250df', quote:'#656d76', abstract:'#0969da', summary:'#0969da', tldr:'#0969da', todo:'#0969da', failure:'#cf222e', missing:'#cf222e', fail:'#cf222e', cite:'#656d76' };
-		const calloutIcons = { note:'&#128221;', tip:'&#128161;', important:'&#9888;', warning:'&#9888;', caution:'&#128308;', info:'&#8505;', success:'&#9989;', check:'&#9989;', done:'&#9989;', question:'&#10067;', help:'&#10067;', faq:'&#10067;', attention:'&#9888;', danger:'&#128308;', error:'&#10060;', bug:'&#128030;', example:'&#128220;', quote:'&#128172;', abstract:'&#128220;', summary:'&#128220;', tldr:'&#128220;', todo:'&#128221;', failure:'&#10060;', missing:'&#10060;', fail:'&#10060;', cite:'&#128172;' };
-		const calloutPattern = calloutTypes.join('|');
-		html = html.replace(new RegExp(`^&gt; \\[!(${calloutPattern})\\](.*)$`, 'gm'), (_, type, title) => {
-			const color = calloutColors[type] || '#0969da';
-			const icon = calloutIcons[type] || '';
-			const label = title.trim() || type.charAt(0).toUpperCase() + type.slice(1);
-			return `<div class="border-l-4 rounded-r-lg pl-3 pr-3 py-2 my-2 text-sm" style="border-color:${color};background:${color}11"><div class="font-semibold" style="color:${color}">${icon} ${label}</div>`;
-		});
-
-		// Blockquotes (> and &gt;)
-		html = html.replace(/^(?:&gt;|>) (.+)$/gm, '<blockquote class="border-l-4 pl-3 my-2" style="border-color:var(--line-divider);color:var(--content-meta)">$1</blockquote>');
-
-		// Bold + Italic (***text***)
-		html = html.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
-		// Bold (**text** or __text__)
-		html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-		html = html.replace(/__(.+?)__/g, '<strong>$1</strong>');
-		// Italic (*text* or _text_)
-		html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
-		html = html.replace(/_([^_]+)_/g, '<em>$1</em>');
-		// Strikethrough
-		html = html.replace(/~~(.+?)~~/g, '<del>$1</del>');
-
-		// Unordered lists
-		html = html.replace(/^[\-\*] (.+)$/gm, '<li>$1</li>');
-		html = html.replace(/((?:<li[^>]*>.*<\/li>\n?)+)/g, (group) => {
-			if (group.includes('class="task-')) return `<ul class="pl-5 my-2" style="list-style:none">${group}</ul>`;
-			return `<ul class="list-disc pl-5 my-2">${group}</ul>`;
-		});
-		// Ordered lists
-		html = html.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
-
-		// Line breaks
-		html = html.replace(/\n/g, "<br>");
-
-		return html;
-	}
-
-	function escapeAttr(s) { return s.replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
-
-	function renderTables(html) {
-		const lines = html.split('\n');
-		const result = [];
-		let i = 0;
-		while (i < lines.length) {
-			const line = lines[i];
-			// Detect table: line contains | not inside code
-			if (line.includes('|') && !line.includes('<') && i + 1 < lines.length) {
-				const nextLine = lines[i + 1];
-				if (nextLine.match(/^\|?[\s\-:|]+\|?$/)) {
-					// We have a table! Collect rows
-					const headerRow = line;
-					const alignRow = nextLine;
-					const bodyRows = [];
-					let j = i + 2;
-					while (j < lines.length && lines[j].includes('|') && !lines[j].includes('<')) {
-						bodyRows.push(lines[j]);
-						j++;
-					}
-					// Parse header
-					const headers = headerRow.split('|').map(c => c.trim()).filter(c => c);
-					// Parse alignment
-					const aligns = alignRow.split('|').map(c => {
-						const t = c.trim();
-						if (t.startsWith(':') && t.endsWith(':')) return 'center';
-						if (t.endsWith(':')) return 'right';
-						return 'left';
-					}).filter(c => c.length > 1 || c === 'left' || c === 'right' || c === 'center'); // crude filter
-					// Actually just align by position
-					const alignPositions = alignRow.split('|').map(c => {
-						const t = c.trim();
-						if (t.startsWith(':') && t.endsWith(':')) return 'center';
-						if (t.endsWith(':')) return 'right';
-						return 'left';
-					});
-					// Build table HTML
-					let table = '<table class="w-full my-3 text-sm border-collapse"><thead><tr>';
-					headers.forEach((h, idx) => {
-						const al = alignPositions[idx + (alignRow.startsWith('|') ? 1 : 0)] || 'left';
-						table += `<th class="px-3 py-2 font-semibold" style="text-align:${al};border-bottom:2px solid var(--line-divider)">${h}</th>`;
-					});
-					table += '</tr></thead><tbody>';
-					for (const row of bodyRows) {
-						const cells = row.split('|').map(c => c.trim()).filter(c => c || row.startsWith('|'));
-						table += '<tr>';
-						cells.forEach((cell, idx) => {
-							if (idx >= headers.length) return;
-							const al = alignPositions[idx + (row.startsWith('|') ? 1 : 0)] || 'left';
-							table += `<td class="px-3 py-2" style="text-align:${al};border-bottom:1px solid var(--line-divider)">${cell}</td>`;
-						});
-						table += '</tr>';
-					}
-					table += '</tbody></table>';
-					result.push(table);
-					i = j;
-					continue;
+			if (mathEls.length === 0) return;
+			if (!window.katex) {
+				if (!document.querySelector("#katex-css")) {
+					const link = document.createElement("link");
+					link.id = "katex-css";
+					link.rel = "stylesheet";
+					link.href =
+						"https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css";
+					document.head.appendChild(link);
 				}
+				await new Promise((res) => {
+					const s = document.createElement("script");
+					s.src =
+						"https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js";
+					s.onload = res;
+					document.head.appendChild(s);
+				});
 			}
-			result.push(line);
-			i++;
-		}
-		return result.join('\n');
+			mathEls.forEach((el) => {
+				try {
+					const latex = el.getAttribute("data-latex");
+					if (!latex) return;
+					window.katex.render(latex, el, {
+						displayMode: el.classList.contains("katex-block"),
+						throwOnError: false,
+					});
+					el.setAttribute("data-rendered", "1");
+				} catch (e) {}
+			});
+		}, 150);
 	}
+});
+
+onMount(async () => {
+	const savedToken = localStorage.getItem("ustinus_token") || "";
+	const savedUser = localStorage.getItem("ustinus_user");
+	if (savedToken && savedUser) {
+		token = savedToken;
+		user = JSON.parse(savedUser);
+	}
+	await loadComments();
+});
+
+async function loadComments() {
+	loading = true;
+	try {
+		const res = await fetch(
+			`${API}/api/comments?slug=${encodeURIComponent(pageSlug)}`,
+		);
+		const data = await res.json();
+		comments = data.comments || [];
+	} catch (e) {
+		console.error(e);
+	}
+	loading = false;
+}
+
+async function doLogin() {
+	loginError = "";
+	const tsToken = window.turnstile?.getResponse?.();
+	if (!tsToken) {
+		loginError = "请完成人机验证";
+		return;
+	}
+	loggingIn = true;
+	try {
+		const res = await fetch(`${API}/api/auth/login`, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({
+				email: loginEmail,
+				password: loginPassword,
+				"cf-turnstile-response": tsToken,
+			}),
+		});
+		const data = await res.json();
+		if (data.error) {
+			loginError = data.error;
+			window.turnstile?.reset();
+			return;
+		}
+		user = data.user;
+		token = data.token;
+		localStorage.setItem("ustinus_token", token);
+		localStorage.setItem("ustinus_user", JSON.stringify(user));
+		showLogin = false;
+		loginEmail = "";
+		loginPassword = "";
+	} catch (e) {
+		loginError = "网络错误，请重试";
+		window.turnstile?.reset();
+	} finally {
+		loggingIn = false;
+	}
+}
+
+async function sendCode() {
+	sendingCode = true;
+	loginError = "";
+	try {
+		const res = await fetch(`${API}/api/auth/send-code`, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ email: loginEmail }),
+		});
+		const data = await res.json();
+		if (data.error) {
+			loginError = data.error;
+		} else {
+			codeSent = true;
+			loginError = "";
+		}
+	} catch (e) {
+		loginError = "发送失败，请重试";
+	}
+	sendingCode = false;
+}
+
+async function verifyEmailCode() {
+	verifying = true;
+	loginError = "";
+	try {
+		const res = await fetch(`${API}/api/auth/verify-code`, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ email: loginEmail, code: verifyCode }),
+		});
+		const data = await res.json();
+		if (data.error) {
+			loginError = data.error;
+		} else {
+			emailVerified = true;
+			loginError = "";
+		}
+	} catch (e) {
+		loginError = "验证失败，请重试";
+	}
+	verifying = false;
+}
+
+async function doRegister() {
+	loginError = "";
+	if (!registerName.trim()) {
+		loginError = "请输入用户名";
+		return;
+	}
+	if (registerName.trim().length < 2) {
+		loginError = "用户名至少 2 个字符";
+		return;
+	}
+	if (!loginEmail.includes("@")) {
+		loginError = "请输入有效邮箱";
+		return;
+	}
+	if (!emailVerified) {
+		loginError = "请先验证邮箱";
+		return;
+	}
+	if (loginPassword.length < 6) {
+		loginError = "密码至少 6 位";
+		return;
+	}
+	if (loginPassword !== loginConfirm) {
+		loginError = "两次密码不一致";
+		return;
+	}
+	const tsToken = window.turnstile?.getResponse?.();
+	if (!tsToken) {
+		loginError = "请完成人机验证";
+		return;
+	}
+	registering = true;
+	try {
+		const res = await fetch(`${API}/api/auth/register`, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({
+				username: registerName.trim(),
+				email: loginEmail,
+				password: loginPassword,
+				"cf-turnstile-response": tsToken,
+			}),
+		});
+		const data = await res.json();
+		if (data.error) {
+			loginError = data.error;
+			window.turnstile?.reset();
+			return;
+		}
+		user = data.user;
+		token = data.token;
+		localStorage.setItem("ustinus_token", token);
+		localStorage.setItem("ustinus_user", JSON.stringify(user));
+		showLogin = false;
+		registerMode = false;
+		loginEmail = "";
+		loginPassword = "";
+		loginConfirm = "";
+		registerName = "";
+		verifyCode = "";
+		emailVerified = false;
+		codeSent = false;
+	} catch (e) {
+		loginError = "网络错误，请重试";
+		window.turnstile?.reset();
+	} finally {
+		registering = false;
+	}
+}
+
+async function doDeleteAccount() {
+	if (!confirm("确认注销账号？此操作不可撤销。")) return;
+	await fetch(`${API}/api/auth/account`, {
+		method: "DELETE",
+		headers: { Authorization: `Bearer ${token}` },
+	});
+	doLogout();
+}
+
+function doLogout() {
+	user = null;
+	token = "";
+	localStorage.removeItem("ustinus_token");
+	localStorage.removeItem("ustinus_user");
+}
+
+function insertEmoji(emoji) {
+	content += emoji;
+}
+
+async function handleImageUpload(e) {
+	const file = e.target.files?.[0];
+	if (!file) return;
+	uploading = true;
+	try {
+		const form = new FormData();
+		form.append("file", file);
+		const res = await fetch(`${API}/api/upload`, {
+			method: "POST",
+			headers: { Authorization: `Bearer ${token}` },
+			body: form,
+		});
+		const data = await res.json();
+		if (data.url) content += `\n![图片](${data.url})\n`;
+	} catch (e) {
+		console.error(e);
+	}
+	uploading = false;
+	e.target.value = "";
+}
+
+async function handleAvatarUpload(e) {
+	const file = e.target.files?.[0];
+	if (!file) return;
+	uploading = true;
+	try {
+		const form = new FormData();
+		form.append("file", file);
+		const res = await fetch(`${API}/api/auth/avatar`, {
+			method: "POST",
+			headers: { Authorization: `Bearer ${token}` },
+			body: form,
+		});
+		const data = await res.json();
+		if (data.url) {
+			user = { ...user, avatar_url: data.url };
+			localStorage.setItem("ustinus_user", JSON.stringify(user));
+			await loadComments();
+		}
+	} catch (e) {
+		console.error(e);
+	}
+	uploading = false;
+	e.target.value = "";
+}
+
+async function doSubmit() {
+	if (!content.trim() || submitting) return;
+	submitting = true;
+	await fetch(`${API}/api/comments`, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+			Authorization: `Bearer ${token}`,
+		},
+		body: JSON.stringify({ page_slug: pageSlug, content: content.trim() }),
+	});
+	content = "";
+	submitting = false;
+	await loadComments();
+}
+
+async function doDelete(id) {
+	if (!confirm("确认删除？")) return;
+	await fetch(`${API}/api/comments/${id}`, {
+		method: "DELETE",
+		headers: { Authorization: `Bearer ${token}` },
+	});
+	await loadComments();
+}
+
+async function doPin(id, pinned) {
+	await fetch(`${API}/api/comments/${id}/pin`, {
+		method: "PATCH",
+		headers: {
+			"Content-Type": "application/json",
+			Authorization: `Bearer ${token}`,
+		},
+		body: JSON.stringify({ pinned }),
+	});
+	await loadComments();
+}
+
+function timeAgo(dateStr) {
+	const diff =
+		Date.now() -
+		new Date(dateStr.endsWith("Z") ? dateStr : dateStr + "Z").getTime();
+	const m = Math.floor(diff / 60000);
+	if (m < 1) return "刚刚";
+	if (m < 60) return `${m} 分钟前`;
+	const h = Math.floor(m / 60);
+	if (h < 24) return `${h} 小时前`;
+	return new Date(dateStr).toLocaleDateString("zh-CN");
+}
+
+function renderContent(text) {
+	if (!text) return "";
+	let html = text
+		.replace(/&/g, "&amp;")
+		.replace(/</g, "&lt;")
+		.replace(/>/g, "&gt;");
+
+	// KaTeX math ($...$ inline, $$...$$ block) — before other processing
+	html = html.replace(
+		/\$\$([\s\S]*?)\$\$/g,
+		(_, m) =>
+			`<div class="katex-block my-3" data-latex="${escapeAttr(m.trim())}"></div>`,
+	);
+	html = html.replace(
+		/\$(.+?)\$/g,
+		(_, m) =>
+			`<span class="katex-inline" data-latex="${escapeAttr(m.trim())}"></span>`,
+	);
+
+	// Code blocks (``` ... ```)
+	html = html.replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => {
+		return `<pre class="my-3 p-3 rounded-lg overflow-x-auto text-sm" style="background:var(--btn-regular-bg)"><code>${code.trim()}</code></pre>`;
+	});
+
+	// Inline code (`...`)
+	html = html.replace(
+		/`([^`]+)`/g,
+		'<code class="px-1 py-0.5 rounded text-sm" style="background:var(--btn-regular-bg);color:var(--primary)">$1</code>',
+	);
+
+	// Images ![alt](url)
+	html = html.replace(
+		/!\[([^\]]*)\]\((\S+)\)/g,
+		'<img src="$2" alt="$1" class="max-w-full rounded-lg my-2" loading="lazy" />',
+	);
+
+	// Links [text](url)
+	html = html.replace(
+		/\[([^\]]+)\]\((\S+)\)/g,
+		'<a href="$2" target="_blank" rel="noopener" class="underline" style="color:var(--primary)">$1</a>',
+	);
+
+	// Task lists (must be before regular lists)
+	html = html.replace(/^[\-\*] \[(x|X| )\] (.+)$/gm, (_, checked, text) =>
+		checked.trim()
+			? '<li class="task-done">&#9745; <del>' + text + "</del></li>"
+			: '<li class="task-pending">&#9744; ' + text + "</li>",
+	);
+
+	// Tables — detect and render GFM tables
+	html = renderTables(html);
+
+	// Headers
+	html = html.replace(
+		/^###### (.+)$/gm,
+		'<h6 class="text-sm font-semibold mt-3 mb-1">$1</h6>',
+	);
+	html = html.replace(
+		/^##### (.+)$/gm,
+		'<h5 class="text-sm font-semibold mt-3 mb-1">$1</h5>',
+	);
+	html = html.replace(
+		/^#### (.+)$/gm,
+		'<h4 class="text-base font-semibold mt-3 mb-1">$1</h4>',
+	);
+	html = html.replace(
+		/^### (.+)$/gm,
+		'<h3 class="text-lg font-semibold mt-4 mb-2">$1</h3>',
+	);
+	html = html.replace(
+		/^## (.+)$/gm,
+		'<h2 class="text-xl font-semibold mt-4 mb-2">$1</h2>',
+	);
+	html = html.replace(
+		/^# (.+)$/gm,
+		'<h1 class="text-2xl font-bold mt-4 mb-2">$1</h1>',
+	);
+
+	// Horizontal rules
+	html = html.replace(
+		/^(---|\*\*\*)\s*$/gm,
+		'<hr class="my-3" style="border-color:var(--line-divider)" />',
+	);
+
+	// Callouts / admonitions: > [!TYPE] Title
+	const calloutTypes = [
+		"note",
+		"tip",
+		"important",
+		"warning",
+		"caution",
+		"info",
+		"success",
+		"check",
+		"done",
+		"question",
+		"help",
+		"faq",
+		"attention",
+		"danger",
+		"error",
+		"bug",
+		"example",
+		"quote",
+		"abstract",
+		"summary",
+		"tldr",
+		"todo",
+		"failure",
+		"missing",
+		"fail",
+		"cite",
+	];
+	const calloutColors = {
+		note: "#0969da",
+		tip: "#1a7f37",
+		important: "#8250df",
+		warning: "#9a6700",
+		caution: "#cf222e",
+		info: "#0969da",
+		success: "#1a7f37",
+		check: "#1a7f37",
+		done: "#8250df",
+		question: "#1a7f37",
+		help: "#0969da",
+		faq: "#1a7f37",
+		attention: "#cf222e",
+		danger: "#cf222e",
+		error: "#cf222e",
+		bug: "#cf222e",
+		example: "#8250df",
+		quote: "#656d76",
+		abstract: "#0969da",
+		summary: "#0969da",
+		tldr: "#0969da",
+		todo: "#0969da",
+		failure: "#cf222e",
+		missing: "#cf222e",
+		fail: "#cf222e",
+		cite: "#656d76",
+	};
+	const calloutIcons = {
+		note: "&#128221;",
+		tip: "&#128161;",
+		important: "&#9888;",
+		warning: "&#9888;",
+		caution: "&#128308;",
+		info: "&#8505;",
+		success: "&#9989;",
+		check: "&#9989;",
+		done: "&#9989;",
+		question: "&#10067;",
+		help: "&#10067;",
+		faq: "&#10067;",
+		attention: "&#9888;",
+		danger: "&#128308;",
+		error: "&#10060;",
+		bug: "&#128030;",
+		example: "&#128220;",
+		quote: "&#128172;",
+		abstract: "&#128220;",
+		summary: "&#128220;",
+		tldr: "&#128220;",
+		todo: "&#128221;",
+		failure: "&#10060;",
+		missing: "&#10060;",
+		fail: "&#10060;",
+		cite: "&#128172;",
+	};
+	const calloutPattern = calloutTypes.join("|");
+	html = html.replace(
+		new RegExp(`^&gt; \\[!(${calloutPattern})\\](.*)$`, "gm"),
+		(_, type, title) => {
+			const color = calloutColors[type] || "#0969da";
+			const icon = calloutIcons[type] || "";
+			const label =
+				title.trim() || type.charAt(0).toUpperCase() + type.slice(1);
+			return `<div class="border-l-4 rounded-r-lg pl-3 pr-3 py-2 my-2 text-sm" style="border-color:${color};background:${color}11"><div class="font-semibold" style="color:${color}">${icon} ${label}</div>`;
+		},
+	);
+
+	// Blockquotes (> and &gt;)
+	html = html.replace(
+		/^(?:&gt;|>) (.+)$/gm,
+		'<blockquote class="border-l-4 pl-3 my-2" style="border-color:var(--line-divider);color:var(--content-meta)">$1</blockquote>',
+	);
+
+	// Bold + Italic (***text***)
+	html = html.replace(/\*\*\*(.+?)\*\*\*/g, "<strong><em>$1</em></strong>");
+	// Bold (**text** or __text__)
+	html = html.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+	html = html.replace(/__(.+?)__/g, "<strong>$1</strong>");
+	// Italic (*text* or _text_)
+	html = html.replace(/\*(.+?)\*/g, "<em>$1</em>");
+	html = html.replace(/_([^_]+)_/g, "<em>$1</em>");
+	// Strikethrough
+	html = html.replace(/~~(.+?)~~/g, "<del>$1</del>");
+
+	// Unordered lists
+	html = html.replace(/^[\-\*] (.+)$/gm, "<li>$1</li>");
+	html = html.replace(/((?:<li[^>]*>.*<\/li>\n?)+)/g, (group) => {
+		if (group.includes('class="task-'))
+			return `<ul class="pl-5 my-2" style="list-style:none">${group}</ul>`;
+		return `<ul class="list-disc pl-5 my-2">${group}</ul>`;
+	});
+	// Ordered lists
+	html = html.replace(/^\d+\. (.+)$/gm, "<li>$1</li>");
+
+	// Line breaks
+	html = html.replace(/\n/g, "<br>");
+
+	return html;
+}
+
+function escapeAttr(s) {
+	return s.replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function renderTables(html) {
+	const lines = html.split("\n");
+	const result = [];
+	let i = 0;
+	while (i < lines.length) {
+		const line = lines[i];
+		// Detect table: line contains | not inside code
+		if (line.includes("|") && !line.includes("<") && i + 1 < lines.length) {
+			const nextLine = lines[i + 1];
+			if (nextLine.match(/^\|?[\s\-:|]+\|?$/)) {
+				// We have a table! Collect rows
+				const headerRow = line;
+				const alignRow = nextLine;
+				const bodyRows = [];
+				let j = i + 2;
+				while (
+					j < lines.length &&
+					lines[j].includes("|") &&
+					!lines[j].includes("<")
+				) {
+					bodyRows.push(lines[j]);
+					j++;
+				}
+				// Parse header
+				const headers = headerRow
+					.split("|")
+					.map((c) => c.trim())
+					.filter((c) => c);
+				// Parse alignment
+				const aligns = alignRow
+					.split("|")
+					.map((c) => {
+						const t = c.trim();
+						if (t.startsWith(":") && t.endsWith(":")) return "center";
+						if (t.endsWith(":")) return "right";
+						return "left";
+					})
+					.filter(
+						(c) =>
+							c.length > 1 || c === "left" || c === "right" || c === "center",
+					); // crude filter
+				// Actually just align by position
+				const alignPositions = alignRow.split("|").map((c) => {
+					const t = c.trim();
+					if (t.startsWith(":") && t.endsWith(":")) return "center";
+					if (t.endsWith(":")) return "right";
+					return "left";
+				});
+				// Build table HTML
+				let table =
+					'<table class="w-full my-3 text-sm border-collapse"><thead><tr>';
+				headers.forEach((h, idx) => {
+					const al =
+						alignPositions[idx + (alignRow.startsWith("|") ? 1 : 0)] || "left";
+					table += `<th class="px-3 py-2 font-semibold" style="text-align:${al};border-bottom:2px solid var(--line-divider)">${h}</th>`;
+				});
+				table += "</tr></thead><tbody>";
+				for (const row of bodyRows) {
+					const cells = row
+						.split("|")
+						.map((c) => c.trim())
+						.filter((c) => c || row.startsWith("|"));
+					table += "<tr>";
+					cells.forEach((cell, idx) => {
+						if (idx >= headers.length) return;
+						const al =
+							alignPositions[idx + (row.startsWith("|") ? 1 : 0)] || "left";
+						table += `<td class="px-3 py-2" style="text-align:${al};border-bottom:1px solid var(--line-divider)">${cell}</td>`;
+					});
+					table += "</tr>";
+				}
+				table += "</tbody></table>";
+				result.push(table);
+				i = j;
+				continue;
+			}
+		}
+		result.push(line);
+		i++;
+	}
+	return result.join("\n");
+}
 </script>
 
 <div class="ustinus-comments">
