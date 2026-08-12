@@ -1,5 +1,5 @@
 <script>
-import { onMount } from "svelte";
+import { onMount, tick } from "svelte";
 
 let turnstileRendered = false;
 
@@ -115,12 +115,19 @@ async function loadComments() {
 async function doLogin() {
 	loginError = "";
 	const tsToken = window.turnstile?.getResponse?.();
-	if (!tsToken) { loginError = "请完成人机验证"; return; }
+	if (!tsToken) {
+		loginError = "请完成人机验证";
+		return;
+	}
 	try {
 		const res = await fetch(`${API}/api/auth/login`, {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ email: loginEmail, password: loginPassword, "cf-turnstile-response": tsToken }),
+			body: JSON.stringify({
+				email: loginEmail,
+				password: loginPassword,
+				"cf-turnstile-response": tsToken,
+			}),
 		});
 		const data = await res.json();
 		if (data.error) {
@@ -141,13 +148,31 @@ async function doLogin() {
 
 async function doRegister() {
 	loginError = "";
-	if (!registerName.trim()) { loginError = "请输入用户名"; return; }
-	if (registerName.trim().length < 2) { loginError = "用户名至少 2 个字符"; return; }
-	if (!loginEmail.includes("@")) { loginError = "请输入有效邮箱"; return; }
-	if (loginPassword.length < 6) { loginError = "密码至少 6 位"; return; }
-	if (loginPassword !== loginConfirm) { loginError = "两次密码不一致"; return; }
+	if (!registerName.trim()) {
+		loginError = "请输入用户名";
+		return;
+	}
+	if (registerName.trim().length < 2) {
+		loginError = "用户名至少 2 个字符";
+		return;
+	}
+	if (!loginEmail.includes("@")) {
+		loginError = "请输入有效邮箱";
+		return;
+	}
+	if (loginPassword.length < 6) {
+		loginError = "密码至少 6 位";
+		return;
+	}
+	if (loginPassword !== loginConfirm) {
+		loginError = "两次密码不一致";
+		return;
+	}
 	const tsToken = window.turnstile?.getResponse?.();
-	if (!tsToken) { loginError = "请完成人机验证"; return; }
+	if (!tsToken) {
+		loginError = "请完成人机验证";
+		return;
+	}
 	try {
 		const res = await fetch(`${API}/api/auth/register`, {
 			method: "POST",
