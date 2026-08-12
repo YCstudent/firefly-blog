@@ -22,6 +22,8 @@ let showEmoji = $state(false);
 let showPreview = $state(false);
 let uploading = $state(false);
 let verifyCode = $state("");
+let showPassword = $state(false);
+let showConfirmPassword = $state(false);
 let emailVerified = $state(false);
 let sendingCode = $state(false);
 let verifying = $state(false);
@@ -418,19 +420,23 @@ function renderContent(text) {
                 <button onclick={sendCode} disabled={sendingCode || !loginEmail.includes("@")} class="px-3 py-2.5 rounded-lg text-white text-xs font-medium shrink-0 transition-opacity disabled:opacity-50" style="background: var(--primary)">{sendingCode ? "发送中..." : codeSent ? "重新发送" : "发送验证码"}</button>
               {/if}
             </div>
-            {#if registerMode && codeSent && !emailVerified}
-              <div class="flex gap-2 mt-2">
-                <input bind:value={verifyCode} type="text" placeholder="6 位验证码" maxlength="6" class="flex-1 px-3 py-2 rounded-lg border text-sm" style="border-color:var(--line-divider);background:var(--btn-regular-bg);color:var(--btn-content)" />
-                <button onclick={verifyEmailCode} disabled={verifying || verifyCode.length < 6} class="px-3 py-2 rounded-lg text-white text-xs font-medium shrink-0 transition-opacity disabled:opacity-50" style="background: var(--primary)">{verifying ? "验证中..." : "验证"}</button>
-              </div>
-            {/if}
             {#if emailVerified}
               <p class="text-green-500 text-xs mt-1">✓ 邮箱已验证</p>
+            {/if}
+            {#if registerMode && codeSent && !emailVerified}
+              <div class="mt-2 p-3 rounded-lg border" style="border-color: var(--line-divider); background: var(--btn-regular-bg)">
+                <label class="block text-xs font-medium mb-1.5" style="color: var(--btn-content)">验证码</label>
+                <div class="flex gap-2">
+                  <input bind:value={verifyCode} type="text" placeholder="输入 6 位验证码" maxlength="6" class="flex-1 px-3 py-2 rounded-lg border text-sm tracking-[4px] text-center font-mono" style="border-color:var(--line-divider);background:var(--card-bg);color:var(--btn-content)" />
+                  <button onclick={verifyEmailCode} disabled={verifying || verifyCode.length < 6} class="px-4 py-2 rounded-lg text-white text-xs font-medium shrink-0 transition-opacity disabled:opacity-50" style="background: var(--primary)">{verifying ? "验证中..." : "验证"}</button>
+                </div>
+                <p class="text-xs mt-1.5" style="color: var(--content-meta)">验证码已发送至 {loginEmail}</p>
+              </div>
             {/if}
           </div>
           <div class="mb-3">
             <label class="block text-xs font-medium mb-1.5" style="color: var(--btn-content)">密码</label>
-            <input bind:value={loginPassword} type="password" placeholder="输入密码" class="w-full px-3 py-2.5 rounded-lg border text-sm" style="border-color:var(--line-divider);background:var(--btn-regular-bg);color:var(--btn-content)" />
+            <input bind:value={loginPassword} type={showPassword ? "text" : "password"} placeholder="输入密码" class="w-full px-3 py-2.5 rounded-lg border text-sm pr-10" style="border-color:var(--line-divider);background:var(--btn-regular-bg);color:var(--btn-content)" />
           </div>
           {#if registerMode}
             <div class="mb-4">
