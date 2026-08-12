@@ -12,6 +12,7 @@ let submitting = $state(false);
 let showLogin = $state(false);
 let loginEmail = $state("");
 let loginPassword = $state("");
+let loginConfirm = $state("");
 let loginError = $state("");
 let registerMode = $state(false);
 let registerName = $state("");
