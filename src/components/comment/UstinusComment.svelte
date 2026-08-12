@@ -92,7 +92,10 @@ $effect(() => {
 				div.setAttribute("data-sitekey", "0x4AAAAAAEN2y0SVTceMvqdv");
 				el.appendChild(div);
 				const isDark = document.documentElement.classList.contains("dark");
-				window.turnstile.render(div, { size: "normal", theme: isDark ? "dark" : "light" });
+				window.turnstile.render(div, {
+					size: "normal",
+					theme: isDark ? "dark" : "light",
+				});
 				turnstileRendered = true;
 			}
 		}, 300);
@@ -159,22 +162,46 @@ async function doLogin() {
 }
 
 async function sendCode() {
-	sendingCode = true; loginError = "";
+	sendingCode = true;
+	loginError = "";
 	try {
-		const res = await fetch(`${API}/api/auth/send-code`, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({email:loginEmail}) });
+		const res = await fetch(`${API}/api/auth/send-code`, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ email: loginEmail }),
+		});
 		const data = await res.json();
-		if (data.error) { loginError = data.error; } else { codeSent = true; loginError = ""; }
-	} catch(e) { loginError = "发送失败，请重试"; }
+		if (data.error) {
+			loginError = data.error;
+		} else {
+			codeSent = true;
+			loginError = "";
+		}
+	} catch (e) {
+		loginError = "发送失败，请重试";
+	}
 	sendingCode = false;
 }
 
 async function verifyEmailCode() {
-	verifying = true; loginError = "";
+	verifying = true;
+	loginError = "";
 	try {
-		const res = await fetch(`${API}/api/auth/verify-code`, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({email:loginEmail, code:verifyCode}) });
+		const res = await fetch(`${API}/api/auth/verify-code`, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ email: loginEmail, code: verifyCode }),
+		});
 		const data = await res.json();
-		if (data.error) { loginError = data.error; } else { emailVerified = true; loginError = ""; }
-	} catch(e) { loginError = "验证失败，请重试"; }
+		if (data.error) {
+			loginError = data.error;
+		} else {
+			emailVerified = true;
+			loginError = "";
+		}
+	} catch (e) {
+		loginError = "验证失败，请重试";
+	}
 	verifying = false;
 }
 
@@ -238,7 +265,10 @@ async function doRegister() {
 
 async function doDeleteAccount() {
 	if (!confirm("确认注销账号？此操作不可撤销。")) return;
-	await fetch(`${API}/api/auth/account`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
+	await fetch(`${API}/api/auth/account`, {
+		method: "DELETE",
+		headers: { Authorization: `Bearer ${token}` },
+	});
 	doLogout();
 }
 
@@ -382,7 +412,21 @@ function renderContent(text) {
           {/if}
           <div class="mb-3">
             <label class="block text-xs font-medium mb-1.5" style="color: var(--btn-content)">邮箱</label>
-            <input bind:value={loginEmail} type="email" placeholder="your@email.com" class="w-full px-3 py-2.5 rounded-lg border text-sm" style="border-color:var(--line-divider);background:var(--btn-regular-bg);color:var(--btn-content)" />
+            <div class="flex gap-2">
+              <input bind:value={loginEmail} type="email" placeholder="your@email.com" disabled={emailVerified} class="flex-1 px-3 py-2.5 rounded-lg border text-sm" style="border-color:var(--line-divider);background:var(--btn-regular-bg);color:var(--btn-content)" />
+              {#if registerMode && !emailVerified}
+                <button onclick={sendCode} disabled={sendingCode || !loginEmail.includes("@")} class="px-3 py-2.5 rounded-lg text-white text-xs font-medium shrink-0 transition-opacity disabled:opacity-50" style="background: var(--primary)">{sendingCode ? "发送中..." : codeSent ? "重新发送" : "发送验证码"}</button>
+              {/if}
+            </div>
+            {#if registerMode && codeSent && !emailVerified}
+              <div class="flex gap-2 mt-2">
+                <input bind:value={verifyCode} type="text" placeholder="6 位验证码" maxlength="6" class="flex-1 px-3 py-2 rounded-lg border text-sm" style="border-color:var(--line-divider);background:var(--btn-regular-bg);color:var(--btn-content)" />
+                <button onclick={verifyEmailCode} disabled={verifying || verifyCode.length < 6} class="px-3 py-2 rounded-lg text-white text-xs font-medium shrink-0 transition-opacity disabled:opacity-50" style="background: var(--primary)">{verifying ? "验证中..." : "验证"}</button>
+              </div>
+            {/if}
+            {#if emailVerified}
+              <p class="text-green-500 text-xs mt-1">✓ 邮箱已验证</p>
+            {/if}
           </div>
           <div class="mb-3">
             <label class="block text-xs font-medium mb-1.5" style="color: var(--btn-content)">密码</label>
