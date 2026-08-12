@@ -86,7 +86,8 @@ $effect(() => {
 				div.className = "cf-turnstile";
 				div.setAttribute("data-sitekey", "0x4AAAAAAEN2y0SVTceMvqdv");
 				el.appendChild(div);
-				window.turnstile.render(div, { size: "normal", theme: "auto" });
+				const isDark = document.documentElement.classList.contains("dark");
+				window.turnstile.render(div, { size: "normal", theme: isDark ? "dark" : "light" });
 				turnstileRendered = true;
 			}
 		}, 300);
