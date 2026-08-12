@@ -16,6 +16,7 @@ let loginError = $state("");
 let registerMode = $state(false);
 let registerName = $state("");
 let showEmoji = $state(false);
+let showPreview = $state(false);
 let uploading = $state(false);
 
 const API = "https://api.202886.xyz";
@@ -260,22 +261,6 @@ function renderContent(text) {
       <h3 class="text-lg font-bold" style="color: var(--btn-content)">评论 ({comments.length})</h3>
       {#if user}
         <div class="flex items-center gap-2">
-          <label class="relative cursor-pointer group" title="点击更换头像">
-            <div class="w-8 h-8 rounded-full overflow-hidden border-2 transition-all hover:opacity-80" style="border-color: var(--primary)">
-              {#if user.avatar_url}
-                <img src={user.avatar_url} alt="" class="w-full h-full object-cover" />
-              {:else}
-                <div class="w-full h-full flex items-center justify-center text-white text-sm font-bold" style="background: var(--primary)">{user.username[0]?.toUpperCase()}</div>
-              {/if}
-              <div class="absolute inset-0 bg-black/40 rounded-full opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><circle cx="12" cy="13" r="3"/></svg>
-              </div>
-            </div>
-            <input type="file" accept="image/*" class="hidden" onchange={(e) => handleAvatarUpload(e)} disabled={uploading} />
-          </label>
-          {#if uploading}
-            <span class="w-4 h-4 border-2 border-(--primary) border-t-transparent rounded-full animate-spin"></span>
-          {/if}
           <span class="text-sm" style="color: var(--btn-content)">{user.username}</span>
           <button onclick={doLogout} class="text-xs cursor-pointer" style="color: var(--content-meta)">退出</button>
         </div>
@@ -309,17 +294,32 @@ function renderContent(text) {
 
   {#if user}
     <div class="mb-6 flex gap-3">
-      <div class="w-9 h-9 rounded-full shrink-0 flex items-center justify-center text-white text-sm font-bold overflow-hidden" style="background: var(--primary)">
-        {#if user.avatar_url}
-          <img src={user.avatar_url} alt="" class="w-full h-full object-cover" />
-        {:else}
-          {user.username[0]?.toUpperCase() || "U"}
-        {/if}
-      </div>
       <div class="flex-1">
-        <textarea bind:value={content} rows="3" placeholder="写下你的想法..." class="w-full px-4 py-3 rounded-xl border resize-none text-sm" style="border-color:var(--line-divider);background:var(--card-bg);color:var(--btn-content)"></textarea>
+        <textarea bind:value={content} rows="3" placeholder="写下你的想法... Markdown 图片语法和表情都支持" class="w-full px-4 py-3 rounded-xl border resize-none text-sm" style="border-color:var(--line-divider);background:var(--card-bg);color:var(--btn-content)"></textarea>
+
+        <!-- Preview -->
+        {#if showPreview && content.trim()}
+          <div class="mt-2 p-4 rounded-xl border text-sm leading-relaxed" style="border-color:var(--line-divider);background:var(--btn-regular-bg);color:var(--btn-content)">
+            <div class="text-xs mb-2" style="color: var(--content-meta)">预览</div>
+            {@html renderContent(content)}
+          </div>
+        {/if}
+
         <div class="flex items-center justify-between mt-2">
           <div class="flex items-center gap-1">
+            <label class="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer hover:opacity-80 relative group {uploading ? 'opacity-50 pointer-events-none' : ''}" style="background: var(--btn-regular-bg)" title="上传头像">
+              <div class="w-5 h-5 rounded-full overflow-hidden">
+                {#if user.avatar_url}
+                  <img src={user.avatar_url} alt="" class="w-full h-full object-cover" />
+                {:else}
+                  <div class="w-full h-full flex items-center justify-center text-white" style="background: var(--primary)"><span class="text-[0.6rem] font-bold">{user.username[0]?.toUpperCase()}</span></div>
+                {/if}
+              </div>
+              <div class="absolute inset-0 bg-black/30 rounded-lg opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><circle cx="12" cy="13" r="3"/></svg>
+              </div>
+              <input type="file" accept="image/*" class="hidden" onchange={(e) => handleAvatarUpload(e)} disabled={uploading} />
+            </label>
             <div class="relative">
               <button onclick={() => showEmoji = !showEmoji} class="w-8 h-8 rounded-lg flex items-center justify-center text-lg cursor-pointer hover:opacity-80" style="background: var(--btn-regular-bg)" title="表情">😊</button>
               {#if showEmoji}
@@ -334,6 +334,9 @@ function renderContent(text) {
               <svg class="w-4 h-4" style="color: var(--btn-content)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
               <input type="file" accept="image/*" class="hidden" onchange={(e) => handleImageUpload(e)} disabled={uploading} />
             </label>
+            <button onclick={() => showPreview = !showPreview} class="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer hover:opacity-80 {showPreview ? 'ring-2' : ''}" style="background: var(--btn-regular-bg);color:var(--btn-content);--tw-ring-color:var(--primary)" title="预览">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+            </button>
           </div>
           <button onclick={doSubmit} disabled={submitting || !content.trim()} class="px-5 py-2 rounded-lg text-white text-sm font-medium transition-opacity disabled:opacity-50 hover:opacity-90" style="background: var(--primary)">{submitting ? "提交中..." : "发表"}</button>
         </div>
