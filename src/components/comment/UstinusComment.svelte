@@ -1,6 +1,8 @@
 <script>
 import { onMount } from "svelte";
 
+let turnstileRendered = false;
+
 let { pageSlug = "" } = $props();
 
 let comments = $state([]);
@@ -73,7 +75,20 @@ const emojis = [
 	"👍",
 ];
 
-onMount(async () => {
+$effect(() => {
+    if (showLogin && registerMode && !turnstileRendered) {
+      setTimeout(() => {
+        const el = document.querySelector('.cf-turnstile');
+        if (el && window.turnstile) {
+          window.turnstile.render(el);
+          turnstileRendered = true;
+        }
+      }, 100);
+    }
+    if (!showLogin) turnstileRendered = false;
+  });
+
+  onMount(async () => {
 	const savedToken = localStorage.getItem("ustinus_token") || "";
 	const savedUser = localStorage.getItem("ustinus_user");
 	if (savedToken && savedUser) {
