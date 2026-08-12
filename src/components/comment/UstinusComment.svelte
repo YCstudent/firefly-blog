@@ -294,10 +294,22 @@ function renderContent(text) {
 
   {#if user}
     <div class="mb-6 flex gap-3">
+      <label class="relative cursor-pointer group shrink-0" title="点击更换头像">
+        <div class="w-9 h-9 rounded-full overflow-hidden border-2 transition-all hover:opacity-80" style="border-color: var(--primary)">
+          {#if user.avatar_url}
+            <img src={user.avatar_url} alt="" class="w-full h-full object-cover" />
+          {:else}
+            <div class="w-full h-full flex items-center justify-center text-white text-sm font-bold" style="background: var(--primary)">{user.username[0]?.toUpperCase() || "U"}</div>
+          {/if}
+          <div class="absolute inset-0 bg-black/40 rounded-full opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><circle cx="12" cy="13" r="3"/></svg>
+          </div>
+        </div>
+        <input type="file" accept="image/*" class="hidden" onchange={(e) => handleAvatarUpload(e)} disabled={uploading} />
+      </label>
       <div class="flex-1">
         <textarea bind:value={content} rows="3" placeholder="写下你的想法... Markdown 图片语法和表情都支持" class="w-full px-4 py-3 rounded-xl border resize-none text-sm" style="border-color:var(--line-divider);background:var(--card-bg);color:var(--btn-content)"></textarea>
 
-        <!-- Preview -->
         {#if showPreview && content.trim()}
           <div class="mt-2 p-4 rounded-xl border text-sm leading-relaxed" style="border-color:var(--line-divider);background:var(--btn-regular-bg);color:var(--btn-content)">
             <div class="text-xs mb-2" style="color: var(--content-meta)">预览</div>
@@ -307,19 +319,6 @@ function renderContent(text) {
 
         <div class="flex items-center justify-between mt-2">
           <div class="flex items-center gap-1">
-            <label class="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer hover:opacity-80 relative group {uploading ? 'opacity-50 pointer-events-none' : ''}" style="background: var(--btn-regular-bg)" title="上传头像">
-              <div class="w-5 h-5 rounded-full overflow-hidden">
-                {#if user.avatar_url}
-                  <img src={user.avatar_url} alt="" class="w-full h-full object-cover" />
-                {:else}
-                  <div class="w-full h-full flex items-center justify-center text-white" style="background: var(--primary)"><span class="text-[0.6rem] font-bold">{user.username[0]?.toUpperCase()}</span></div>
-                {/if}
-              </div>
-              <div class="absolute inset-0 bg-black/30 rounded-lg opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><circle cx="12" cy="13" r="3"/></svg>
-              </div>
-              <input type="file" accept="image/*" class="hidden" onchange={(e) => handleAvatarUpload(e)} disabled={uploading} />
-            </label>
             <div class="relative">
               <button onclick={() => showEmoji = !showEmoji} class="w-8 h-8 rounded-lg flex items-center justify-center text-lg cursor-pointer hover:opacity-80" style="background: var(--btn-regular-bg)" title="表情">😊</button>
               {#if showEmoji}
