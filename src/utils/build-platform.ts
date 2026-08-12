@@ -63,5 +63,6 @@ export function detectBuildPlatform({
 		return unknownBuildPlatform;
 	}
 
-	return isDev ? "Local Dev" : "Local";
+	if (isDev) return "Local Dev";
+	return "Cloudflare Workers";
 }
