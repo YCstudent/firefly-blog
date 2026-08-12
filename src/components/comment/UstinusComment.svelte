@@ -20,7 +20,14 @@
 
   const API = "https://api.202886.xyz";
 
-  const emojis = "😀😂🤣😊😍🤩😎🤔😅😭🤯🥳😇🙃🤗😴🤐😤😡🤬💀👻👽🤖🎉❤️🔥⭐💯✅❌🤝👏🙌💪🧠👀🦾🌈☀️🌙⚡💧🍕🎮📚💻🚀🎯🏆".split("");
+  const emojis = [
+    "😀","😂","🤣","😊","😍","🤩","😎","🤔",
+    "😅","😭","🥳","😇","🙃","🤗","😴","🤐",
+    "😤","😡","💀","👻","👽","🤖","🎉","❤️",
+    "🔥","⭐","💯","✅","❌","🤝","👏","🙌",
+    "💪","🧠","👀","🌈","☀️","🌙","⚡","💧",
+    "🍕","🎮","📚","💻","🚀","🎯","🏆","👍",
+  ];
 
   onMount(async () => {
     const savedToken = localStorage.getItem("ustinus_token") || "";
@@ -46,19 +53,15 @@
     loginError = "";
     try {
       const res = await fetch(`${API}/api/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: loginEmail, password: loginPassword }),
       });
       const data = await res.json();
       if (data.error) { loginError = data.error; return; }
-      user = data.user;
-      token = data.token;
+      user = data.user; token = data.token;
       localStorage.setItem("ustinus_token", token);
       localStorage.setItem("ustinus_user", JSON.stringify(user));
-      showLogin = false;
-      loginEmail = "";
-      loginPassword = "";
+      showLogin = false; loginEmail = ""; loginPassword = "";
     } catch(e) { loginError = "网络错误，请重试"; }
   }
 
@@ -66,21 +69,15 @@
     loginError = "";
     try {
       const res = await fetch(`${API}/api/auth/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username: registerName, email: loginEmail, password: loginPassword }),
       });
       const data = await res.json();
       if (data.error) { loginError = data.error; return; }
-      user = data.user;
-      token = data.token;
+      user = data.user; token = data.token;
       localStorage.setItem("ustinus_token", token);
       localStorage.setItem("ustinus_user", JSON.stringify(user));
-      showLogin = false;
-      registerMode = false;
-      loginEmail = "";
-      loginPassword = "";
-      registerName = "";
+      showLogin = false; registerMode = false; loginEmail = ""; loginPassword = ""; registerName = "";
     } catch(e) { loginError = "网络错误，请重试"; }
   }
 
@@ -90,27 +87,38 @@
     localStorage.removeItem("ustinus_user");
   }
 
-  function insertEmoji(emoji) {
-    content += emoji;
-    showEmoji = false;
-  }
+  function insertEmoji(emoji) { content += emoji; }
 
   async function handleImageUpload(e) {
     const file = e.target.files?.[0];
-    if (!file) return;
-    uploading = true;
+    if (!file) return; uploading = true;
     try {
-      const form = new FormData();
-      form.append("file", file);
+      const form = new FormData(); form.append("file", file);
       const res = await fetch(`${API}/api/upload`, {
-        method: "POST",
-        headers: { "Authorization": `Bearer ${token}` },
-        body: form,
+        method: "POST", headers: { Authorization: `Bearer ${token}` }, body: form,
       });
       const data = await res.json();
       if (data.url) content += `\n![图片](${data.url})\n`;
     } catch(e) { console.error(e); }
-    uploading = false;
+    uploading = false; e.target.value = "";
+  }
+
+  async function handleAvatarUpload(e) {
+    const file = e.target.files?.[0];
+    if (!file) return; uploading = true;
+    try {
+      const form = new FormData(); form.append("file", file);
+      const res = await fetch(`${API}/api/auth/avatar`, {
+        method: "POST", headers: { Authorization: `Bearer ${token}` }, body: form,
+      });
+      const data = await res.json();
+      if (data.url) {
+        user = { ...user, avatar_url: data.url };
+        localStorage.setItem("ustinus_user", JSON.stringify(user));
+        await loadComments();
+      }
+    } catch(e) { console.error(e); }
+    uploading = false; e.target.value = "";
   }
 
   async function doSubmit() {
@@ -121,16 +129,14 @@
       headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
       body: JSON.stringify({ page_slug: pageSlug, content: content.trim() }),
     });
-    content = "";
-    submitting = false;
+    content = ""; submitting = false;
     await loadComments();
   }
 
   async function doDelete(id) {
-    if (!confirm("确认删除这条评论？")) return;
+    if (!confirm("确认删除？")) return;
     await fetch(`${API}/api/comments/${id}`, {
-      method: "DELETE",
-      headers: { "Authorization": `Bearer ${token}` },
+      method: "DELETE", headers: { "Authorization": `Bearer ${token}` },
     });
     await loadComments();
   }
@@ -146,10 +152,9 @@
   }
 
   function renderContent(text) {
-    // Replace ![图片](url) with img tag
     if (!text) return "";
     return text
-      .replace(/!\[.*?\]\((https?:\/\/[^\s)]+)\)/g, '<img src="$1" class="max-w-full rounded-lg my-2" loading="lazy" alt="图片" />')
+      .replace(/!\[.*?\]\((https?:\/\/[^\s)]+)\)/g, '<img src="$1" class="max-w-full rounded-lg my-2" loading="lazy" alt="" />')
       .replace(/\n/g, "<br>");
   }
 </script>
@@ -159,8 +164,18 @@
     <div class="flex items-center justify-between mb-4">
       <h3 class="text-lg font-bold" style="color: var(--btn-content)">评论 ({comments.length})</h3>
       {#if user}
-        <div class="flex items-center gap-3">
-          <span class="text-sm" style="color: var(--content-meta)">{user.username}</span>
+        <div class="flex items-center gap-2">
+          <label class="relative cursor-pointer group" title="更换头像">
+            <div class="w-7 h-7 rounded-full overflow-hidden border-2 transition-all" style="border-color: var(--primary)">
+              {#if user.avatar_url}
+                <img src={user.avatar_url} alt="" class="w-full h-full object-cover" />
+              {:else}
+                <div class="w-full h-full flex items-center justify-center text-white text-xs font-bold" style="background: var(--primary)">{user.username[0]?.toUpperCase()}</div>
+              {/if}
+            </div>
+            <input type="file" accept="image/*" class="hidden" onchange={(e) => handleAvatarUpload(e)} disabled={uploading} />
+          </label>
+          <span class="text-sm" style="color: var(--btn-content)">{user.username}</span>
           <button onclick={doLogout} class="text-xs cursor-pointer" style="color: var(--content-meta)">退出</button>
         </div>
       {/if}
@@ -169,9 +184,7 @@
     {#if !user && !showLogin}
       <div class="rounded-xl border p-4 flex items-center justify-between" style="border-color: var(--line-divider); background: var(--btn-regular-bg)">
         <span class="text-sm" style="color: var(--content-meta)">登录后参与讨论</span>
-        <button onclick={() => { showLogin = true; loginError = ""; registerMode = false; }} class="px-4 py-2 rounded-lg text-white text-sm font-medium transition-opacity hover:opacity-90" style="background: var(--primary)">
-          登录 / 注册
-        </button>
+        <button onclick={() => { showLogin = true; loginError = ""; registerMode = false; }} class="px-4 py-2 rounded-lg text-white text-sm font-medium transition-opacity hover:opacity-90" style="background: var(--primary)">登录 / 注册</button>
       </div>
     {/if}
 
@@ -179,20 +192,14 @@
       <div class="rounded-xl border p-5" style="border-color: var(--line-divider); background: var(--btn-regular-bg)">
         <h4 class="text-sm font-semibold mb-4" style="color: var(--btn-content)">{registerMode ? "创建账号" : "登录账号"}</h4>
         {#if registerMode}
-          <input bind:value={registerName} type="text" placeholder="用户名" class="w-full mb-3 px-3 py-2.5 rounded-lg border text-sm focus:outline-none" style="border-color:var(--line-divider);background:var(--card-bg);color:var(--btn-content)" />
+          <input bind:value={registerName} type="text" placeholder="用户名" class="w-full mb-3 px-3 py-2.5 rounded-lg border text-sm" style="border-color:var(--line-divider);background:var(--card-bg);color:var(--btn-content)" />
         {/if}
-        <input bind:value={loginEmail} type="email" placeholder="邮箱" class="w-full mb-3 px-3 py-2.5 rounded-lg border text-sm focus:outline-none" style="border-color:var(--line-divider);background:var(--card-bg);color:var(--btn-content)" />
-        <input bind:value={loginPassword} type="password" placeholder="密码" class="w-full mb-3 px-3 py-2.5 rounded-lg border text-sm focus:outline-none" style="border-color:var(--line-divider);background:var(--card-bg);color:var(--btn-content)" />
-        {#if loginError}
-          <p class="text-red-500 text-xs mb-3">{loginError}</p>
-        {/if}
+        <input bind:value={loginEmail} type="email" placeholder="邮箱" class="w-full mb-3 px-3 py-2.5 rounded-lg border text-sm" style="border-color:var(--line-divider);background:var(--card-bg);color:var(--btn-content)" />
+        <input bind:value={loginPassword} type="password" placeholder="密码" class="w-full mb-3 px-3 py-2.5 rounded-lg border text-sm" style="border-color:var(--line-divider);background:var(--card-bg);color:var(--btn-content)" />
+        {#if loginError}<p class="text-red-500 text-xs mb-3">{loginError}</p>{/if}
         <div class="flex items-center gap-3">
-          <button onclick={registerMode ? doRegister : doLogin} class="px-5 py-2 rounded-lg text-white text-sm font-medium transition-opacity hover:opacity-90" style="background: var(--primary)">
-            {registerMode ? "注册" : "登录"}
-          </button>
-          <button onclick={() => { registerMode = !registerMode; loginError = ""; }} class="text-sm cursor-pointer" style="color: var(--primary)">
-            {registerMode ? "← 返回登录" : "没有账号？注册"}
-          </button>
+          <button onclick={registerMode ? doRegister : doLogin} class="px-5 py-2 rounded-lg text-white text-sm font-medium transition-opacity hover:opacity-90" style="background: var(--primary)">{registerMode ? "注册" : "登录"}</button>
+          <button onclick={() => { registerMode = !registerMode; loginError = ""; }} class="text-sm cursor-pointer" style="color: var(--primary)">{registerMode ? "← 返回登录" : "没有账号？注册"}</button>
           <button onclick={() => { showLogin = false; loginError = ""; }} class="text-sm ml-auto cursor-pointer" style="color: var(--content-meta)">取消</button>
         </div>
       </div>
@@ -209,29 +216,25 @@
         {/if}
       </div>
       <div class="flex-1">
-        <textarea bind:value={content} rows="3" placeholder="写下你的想法... Markdown 语法和表情包都支持" class="w-full px-4 py-3 rounded-xl border resize-none text-sm focus:outline-none" style="border-color:var(--line-divider);background:var(--card-bg);color:var(--btn-content)"></textarea>
+        <textarea bind:value={content} rows="3" placeholder="写下你的想法..." class="w-full px-4 py-3 rounded-xl border resize-none text-sm" style="border-color:var(--line-divider);background:var(--card-bg);color:var(--btn-content)"></textarea>
         <div class="flex items-center justify-between mt-2">
-          <div class="flex items-center gap-2">
-            <!-- Emoji toggle -->
+          <div class="flex items-center gap-1">
             <div class="relative">
-              <button onclick={() => showEmoji = !showEmoji} class="w-8 h-8 rounded-lg flex items-center justify-center text-lg cursor-pointer transition-colors hover:opacity-80" style="background: var(--btn-regular-bg)" title="表情">
-                😊
-              </button>
+              <button onclick={() => showEmoji = !showEmoji} class="w-8 h-8 rounded-lg flex items-center justify-center text-lg cursor-pointer hover:opacity-80" style="background: var(--btn-regular-bg)" title="表情">😊</button>
               {#if showEmoji}
-                <div class="absolute bottom-full left-0 mb-2 p-2 rounded-xl border shadow-lg grid grid-cols-10 gap-1 z-50 max-h-48 overflow-y-auto" style="background:var(--card-bg);border-color:var(--line-divider)">
+                <div class="absolute bottom-full left-0 mb-2 p-2 rounded-xl border shadow-lg grid grid-cols-8 gap-1 z-50" style="background:var(--card-bg);border-color:var(--line-divider);max-height:200px;overflow-y:auto;width:260px">
                   {#each emojis as emoji}
-                    <button onclick={() => insertEmoji(emoji)} class="w-7 h-7 flex items-center justify-center text-base rounded hover:opacity-80 cursor-pointer" style="background:var(--btn-regular-bg)">{emoji}</button>
+                    <button onclick={() => insertEmoji(emoji)} class="w-7 h-7 flex items-center justify-center text-base rounded hover:opacity-80 cursor-pointer leading-none" style="background:var(--btn-regular-bg)">{emoji}</button>
                   {/each}
                 </div>
               {/if}
             </div>
-            <!-- Image upload -->
-            <label class="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer transition-colors hover:opacity-80 {uploading ? 'opacity-50' : ''}" style="background: var(--btn-regular-bg)" title="上传图片">
+            <label class="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer hover:opacity-80 {uploading ? 'opacity-50 pointer-events-none' : ''}" style="background: var(--btn-regular-bg)" title="上传图片">
               <svg class="w-4 h-4" style="color: var(--btn-content)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
               <input type="file" accept="image/*" class="hidden" onchange={(e) => handleImageUpload(e)} disabled={uploading} />
             </label>
           </div>
-          <button onclick={doSubmit} disabled={submitting || !content.trim()} class="px-5 py-2 rounded-lg text-white text-sm font-medium transition-opacity disabled:opacity-50 hover:opacity-90" style="background: var(--primary)">{submitting ? "提交中..." : "发表评论"}</button>
+          <button onclick={doSubmit} disabled={submitting || !content.trim()} class="px-5 py-2 rounded-lg text-white text-sm font-medium transition-opacity disabled:opacity-50 hover:opacity-90" style="background: var(--primary)">{submitting ? "提交中..." : "发表"}</button>
         </div>
       </div>
     </div>
@@ -260,7 +263,7 @@
               <span class="text-sm font-semibold" style="color: var(--btn-content)">{comment.username}</span>
               <span class="text-xs" style="color: var(--content-meta)">{timeAgo(comment.created_at)}</span>
               {#if user && user.id === comment.user_id}
-                <button onclick={() => doDelete(comment.id)} class="ml-auto text-xs cursor-pointer" style="color: var(--content-meta)" title="删除评论">🗑️</button>
+                <button onclick={() => doDelete(comment.id)} class="ml-auto text-xs cursor-pointer" style="color: var(--content-meta)" title="删除">删除</button>
               {/if}
             </div>
             <div class="text-sm leading-relaxed" style="color: var(--btn-content)">
