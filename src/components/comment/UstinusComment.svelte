@@ -304,6 +304,9 @@ function renderContent(text) {
               <label class="block text-xs font-medium mb-1.5" style="color: var(--btn-content)">确认密码</label>
               <input bind:value={loginConfirm} type="password" placeholder="再次输入密码" class="w-full px-3 py-2.5 rounded-lg border text-sm" style="border-color:var(--line-divider);background:var(--btn-regular-bg);color:var(--btn-content)" />
             </div>
+            <div class="mb-4 flex justify-center">
+              <div class="cf-turnstile" data-sitekey="0x4AAAAAAEN2y0SVTceMvqdv" data-action="register"></div>
+            </div>
           {/if}
           {#if loginError}
             <p class="text-red-500 text-xs mb-3">{loginError}</p>
