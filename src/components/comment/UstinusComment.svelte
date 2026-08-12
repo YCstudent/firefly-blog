@@ -18,6 +18,11 @@ let loginConfirm = $state("");
 let loginError = $state("");
 let registerMode = $state(false);
 let registerName = $state("");
+let verifyCode = $state("");
+let emailVerified = $state(false);
+let sendingCode = $state(false);
+let verifying = $state(false);
+let codeSent = $state(false);
 let showEmoji = $state(false);
 let showPreview = $state(false);
 let uploading = $state(false);
@@ -87,7 +92,10 @@ $effect(() => {
 				div.setAttribute("data-sitekey", "0x4AAAAAAEN2y0SVTceMvqdv");
 				el.appendChild(div);
 				const isDark = document.documentElement.classList.contains("dark");
-				window.turnstile.render(div, { size: "normal", theme: isDark ? "dark" : "light" });
+				window.turnstile.render(div, {
+					size: "normal",
+					theme: isDark ? "dark" : "light",
+				});
 				turnstileRendered = true;
 			}
 		}, 300);
@@ -155,6 +163,7 @@ async function doLogin() {
 
 async function doRegister() {
 	loginError = "";
+	if (!emailVerified) { loginError = "请先验证邮箱"; return; }
 	if (!registerName.trim()) {
 		loginError = "请输入用户名";
 		return;
@@ -332,7 +341,7 @@ function renderContent(text) {
           <p class="text-sm font-medium" style="color: var(--btn-content)">参与讨论</p>
           <p class="text-xs mt-0.5" style="color: var(--content-meta)">登录后可以发表评论、上传图片</p>
         </div>
-        <button onclick={() => { showLogin = true; loginError = ""; registerMode = false; setTimeout(renderTurnstile, 100); }} class="px-5 py-2.5 rounded-lg text-white text-sm font-medium transition-opacity hover:opacity-90 shrink-0" style="background: var(--primary)">登录 / 注册</button>
+        <button onclick={() => { showLogin = true; loginError = ""; registerMode = false; emailVerified = false; codeSent = false; verifyCode = ""; setTimeout(renderTurnstile, 100); }} class="px-5 py-2.5 rounded-lg text-white text-sm font-medium transition-opacity hover:opacity-90 shrink-0" style="background: var(--primary)">登录 / 注册</button>
       </div>
     {/if}
 
@@ -351,7 +360,21 @@ function renderContent(text) {
           {/if}
           <div class="mb-3">
             <label class="block text-xs font-medium mb-1.5" style="color: var(--btn-content)">邮箱</label>
-            <input bind:value={loginEmail} type="email" placeholder="your@email.com" class="w-full px-3 py-2.5 rounded-lg border text-sm" style="border-color:var(--line-divider);background:var(--btn-regular-bg);color:var(--btn-content)" />
+            <div class="flex gap-2">
+              <input bind:value={loginEmail} type="email" placeholder="your@email.com" disabled={emailVerified} class="flex-1 px-3 py-2.5 rounded-lg border text-sm" style="border-color:var(--line-divider);background:var(--btn-regular-bg);color:var(--btn-content)" />
+              {#if registerMode && !emailVerified}
+                <button onclick={sendCode} disabled={sendingCode || !loginEmail.includes("@")} class="px-3 py-2.5 rounded-lg text-white text-xs font-medium shrink-0 transition-opacity disabled:opacity-50" style="background: var(--primary)">{sendingCode ? "发送中..." : codeSent ? "重新发送" : "发送验证码"}</button>
+              {/if}
+            </div>
+            {#if registerMode && codeSent && !emailVerified}
+              <div class="flex gap-2 mt-2">
+                <input bind:value={verifyCode} type="text" placeholder="6 位验证码" maxlength="6" class="flex-1 px-3 py-2 rounded-lg border text-sm" style="border-color:var(--line-divider);background:var(--btn-regular-bg);color:var(--btn-content)" />
+                <button onclick={verifyEmailCode} disabled={verifying || verifyCode.length < 6} class="px-3 py-2 rounded-lg text-white text-xs font-medium shrink-0 transition-opacity disabled:opacity-50" style="background: var(--primary)">{verifying ? "验证中..." : "验证"}</button>
+              </div>
+            {/if}
+            {#if emailVerified}
+              <p class="text-green-500 text-xs mt-1">✓ 邮箱已验证</p>
+            {/if}
           </div>
           <div class="mb-3">
             <label class="block text-xs font-medium mb-1.5" style="color: var(--btn-content)">密码</label>
