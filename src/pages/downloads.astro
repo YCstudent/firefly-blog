@@ -1,110 +1,110 @@
 ---
-import Layout from "../layouts/Layout.astro";
+import MainGridLayout from "@/layouts/MainGridLayout.astro";
 import { downloadConfig } from "../config/downloadConfig";
 import { Icon } from "astro-icon/components";
 
 const iconMap: Record<string, string> = {
-	pdf: "material-symbols:picture-as-pdf-outline",
-	image: "material-symbols:image-outline",
-	markdown: "material-symbols:description-outline",
-	code: "material-symbols:code",
-	archive: "material-symbols:folder-zip-outline",
-	file: "material-symbols:insert-drive-file-outline",
+  pdf: "material-symbols:picture-as-pdf-outline",
+  image: "material-symbols:image-outline",
+  markdown: "material-symbols:description-outline",
+  code: "material-symbols:code",
+  archive: "material-symbols:folder-zip-outline",
+  file: "material-symbols:insert-drive-file-outline",
 };
 
-const sizeMap: Record<string, string> = {
-	pdf: "text-red-500",
-	image: "text-green-500",
-	markdown: "text-blue-500",
-	code: "text-purple-500",
-	archive: "text-amber-500",
-	file: "text-gray-500",
+const colorMap: Record<string, string> = {
+  pdf: "text-red-500",
+  image: "text-green-500",
+  markdown: "text-blue-500",
+  code: "text-purple-500",
+  archive: "text-amber-500",
+  file: "text-gray-500",
 };
 
 const { title, description, categories, files } = downloadConfig;
 ---
 
-<Layout title={title} description={description}>
-  <main class="max-w-4xl mx-auto px-4 py-8">
-    <!-- Header -->
-    <div class="mb-8">
-      <h1 class="text-3xl font-bold mb-2">{title}</h1>
-      <p class="text-(--content-meta)">{description}</p>
-    </div>
+<MainGridLayout title={title} description={description}>
+  <div class="flex w-full rounded-(--radius-large) overflow-hidden relative min-h-32">
+    <div class="card-base z-10 px-9 py-6 relative w-full">
 
-    <!-- Filter tabs -->
-    <div id="filter-tabs" class="flex flex-wrap gap-2 mb-6">
-      {categories.map((cat) => (
-        <button
-          class="filter-btn px-4 py-1.5 rounded-full text-sm font-medium border border-(--line-divider) bg-(--btn-regular-bg) text-(--btn-content) transition-all hover:bg-(--btn-regular-bg-hover) data-[active=true]:bg-(--primary) data-[active=true]:text-white data-[active=true]:border-(--primary)"
-          data-category={cat}
-        >
-          {cat}
-        </button>
-      ))}
-    </div>
-
-    <!-- Search -->
-    <div class="relative mb-6">
-      <Icon name="material-symbols:search" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-(--content-meta)" />
-      <input
-        id="search-input"
-        type="text"
-        placeholder="搜索文件名或描述..."
-        class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-(--line-divider) bg-(--btn-regular-bg) text-(--btn-content) placeholder:text-(--content-meta) focus:outline-none focus:ring-2 focus:ring-(--primary)/30"
-      />
-    </div>
-
-    <!-- File list -->
-    <div id="file-list" class="space-y-3">
-      {(files.length === 0) && (
-        <div class="text-center py-12 text-(--content-meta)">
-          <Icon name="material-symbols:folder-open-outline" class="w-12 h-12 mx-auto mb-3 opacity-40" />
-          <p>暂无文件，敬请期待</p>
-        </div>
-      )}
-
-      {files.map((file, index) => (
-        <div class="file-card rounded-xl border border-(--line-divider) bg-(--card-bg) overflow-hidden transition-shadow hover:shadow-md"
-             data-category={file.category || categories[0]}
-             data-name={file.name.toLowerCase()}
-             data-desc={(file.desc || "").toLowerCase()}>
-          <!-- Card header -->
-          <div class="p-4 flex items-center gap-4 cursor-pointer file-header"
-               data-index={index}>
-            <!-- Icon -->
-            <div class={`w-10 h-10 rounded-lg bg-(--btn-regular-bg) flex items-center justify-center shrink-0`}>
-              <Icon name={iconMap[file.icon || "file"]} class={`w-5 h-5 ${sizeMap[file.icon || "file"]}`} />
-            </div>
-
-            <!-- Info -->
-            <div class="flex-1 min-w-0">
-              <h3 class="font-semibold text-sm truncate">{file.name}</h3>
-              <div class="flex items-center gap-3 mt-0.5">
-                {file.desc && <p class="text-xs text-(--content-meta) truncate">{file.desc}</p>}
-              </div>
-            </div>
-
-            <!-- Meta -->
-            <div class="flex items-center gap-3 shrink-0">
-              {file.size && <span class="text-xs text-(--content-meta) hidden sm:inline">{file.size}</span>}
-              <span class="text-xs text-(--content-meta) hidden sm:inline">{file.icon?.toUpperCase() || "FILE"}</span>
-
-              <!-- Download button -->
-              <a href={file.url} download class="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-(--primary) text-white text-xs font-medium hover:opacity-90 transition-opacity no-underline">
-                <Icon name="material-symbols:download" class="w-3.5 h-3.5" />
-                <span class="hidden sm:inline">下载</span>
-              </a>
-            </div>
+      <!-- Title -->
+      <div class="mb-4">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="h-8 w-8 rounded-lg bg-(--primary) flex items-center justify-center text-white dark:text-black/70">
+            <Icon is:inline name="material-symbols:cloud-download-outline-rounded" class="text-[1.5rem]" />
+          </div>
+          <div class="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
+            {title}
           </div>
         </div>
-      ))}
+        <p class="text-base text-neutral-600 dark:text-neutral-400 leading-relaxed mb-4">
+          {description}
+        </p>
+      </div>
+
+      <!-- Filter tabs -->
+      <div id="filter-tabs" class="flex flex-wrap gap-2 mb-4">
+        {categories.map((cat) => (
+          <button
+            class="filter-btn px-4 py-1.5 rounded-full text-sm font-medium border border-(--line-divider) bg-(--btn-regular-bg) text-(--btn-content) transition-all hover:bg-(--btn-regular-bg-hover) data-[active=true]:bg-(--primary) data-[active=true]:text-white data-[active=true]:border-(--primary)"
+            data-category={cat}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
+
+      <!-- Search -->
+      <div class="relative mb-4">
+        <Icon is:inline name="material-symbols:search" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400 dark:text-neutral-500 pointer-events-none" />
+        <input
+          id="search-input"
+          type="text"
+          placeholder="搜索文件名或描述..."
+          class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-(--line-divider) bg-(--btn-regular-bg) text-(--btn-content) placeholder:text-(--content-meta) focus:outline-none focus:ring-2 focus:ring-(--primary)/30"
+        />
+      </div>
+
+      <!-- File list -->
+      <div id="file-list" class="space-y-2">
+        {(files.length === 0) && (
+          <div class="text-center py-12 text-neutral-400 dark:text-neutral-500">
+            <Icon is:inline name="material-symbols:folder-open-outline" class="w-12 h-12 mx-auto mb-3 opacity-40" />
+            <p>暂无文件，敬请期待</p>
+          </div>
+        )}
+
+        {files.map((file) => (
+          <div class="file-card rounded-xl border border-(--line-divider) overflow-hidden transition-shadow hover:shadow-md"
+               data-category={file.category || categories[0]}
+               data-name={file.name.toLowerCase()}
+               data-desc={(file.desc || "").toLowerCase()}>
+            <div class="p-4 flex items-center gap-4">
+              <div class={`w-10 h-10 rounded-lg bg-(--btn-regular-bg) flex items-center justify-center shrink-0`}>
+                <Icon is:inline name={iconMap[file.icon || "file"]} class={`w-5 h-5 ${colorMap[file.icon || "file"]}`} />
+              </div>
+              <div class="flex-1 min-w-0">
+                <h3 class="font-semibold text-sm truncate text-neutral-900 dark:text-neutral-100">{file.name}</h3>
+                {file.desc && <p class="text-xs text-neutral-500 dark:text-neutral-400 truncate mt-0.5">{file.desc}</p>}
+              </div>
+              <div class="flex items-center gap-3 shrink-0">
+                {file.size && <span class="text-xs text-neutral-400 dark:text-neutral-500 hidden sm:inline">{file.size}</span>}
+                <a href={file.url} download class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-(--primary) text-white text-sm font-medium hover:opacity-90 transition-opacity no-underline">
+                  <Icon is:inline name="material-symbols:download" class="w-4 h-4" />
+                  下载
+                </a>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
     </div>
-  </main>
-</Layout>
+  </div>
+</MainGridLayout>
 
 <script>
-  // Filter logic
   const filterBtns = document.querySelectorAll(".filter-btn");
   const fileCards = document.querySelectorAll(".file-card");
   const searchInput = document.getElementById("search-input") as HTMLInputElement;
@@ -113,16 +113,13 @@ const { title, description, categories, files } = downloadConfig;
 
   function updateFilter() {
     const query = searchInput?.value.toLowerCase() || "";
-
     fileCards.forEach((card) => {
       const el = card as HTMLElement;
       const cat = el.dataset.category || "";
       const name = el.dataset.name || "";
       const desc = el.dataset.desc || "";
-
       const matchCat = activeCategory === "全部" || cat === activeCategory;
       const matchSearch = !query || name.includes(query) || desc.includes(query);
-
       el.style.display = matchCat && matchSearch ? "" : "none";
     });
   }
@@ -137,7 +134,5 @@ const { title, description, categories, files } = downloadConfig;
   });
 
   searchInput?.addEventListener("input", updateFilter);
-
-  // Set "全部" as active by default
   filterBtns[0]?.setAttribute("data-active", "true");
 </script>

@@ -68,13 +68,13 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 			// 书签导航
 			LinkPresets.Booknav,
 
-		{
-			name: "资源分享",
-			url: "/downloads/",
-			icon: "material-symbols:cloud-download-outline-rounded",
-			pageKey: "downloads",
-			external: false,
-		},
+			{
+				name: "资源分享",
+				url: "/downloads/",
+				icon: "material-symbols:cloud-download-outline-rounded",
+				pageKey: "downloads",
+				external: false,
+			},
 		],
 	});
 
