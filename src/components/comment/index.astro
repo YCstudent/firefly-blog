@@ -9,6 +9,7 @@ import Disqus from "./Disqus.astro";
 import Giscus from "./Giscus.astro";
 import Twikoo from "./Twikoo.astro";
 import Waline from "./Waline.astro";
+import UstinusComment from "./UstinusComment.svelte";
 
 interface Props {
 	post?: CollectionEntry<"posts"> | CollectionEntry<"spec">;
@@ -59,6 +60,7 @@ let commentService: string = commentConfig?.type || "none";
         {commentService === "twikoo" && <Twikoo path={path} />}
         {commentService === "waline" && <Waline path={path} />}
         {commentService === "giscus" && <Giscus />}
+        {commentService === "ustinus" && <UstinusComment pageSlug={path} client:load />}
         {commentService === "disqus" && <Disqus identifier={slug} url={url} title={customTitle || postTitle || slug} />}
           {commentService === "artalk" && <Artalk path={path} />}
         {commentService === "none" && (
@@ -73,7 +75,7 @@ let commentService: string = commentConfig?.type || "none";
         )}
         {commentService !== "none" && (
           <p class="text-center text-xs text-(--content-meta) mt-6 border-t border-(--line-divider) pt-4">
-            评论系统基于 GitHub Discussions (Giscus)，中国大陆地区可能无法正常加载，需要科学上网。
+            评论系统由 Cloudflare Workers + D1 驱动，支持注册登录。
           </p>
         )}
       </div>

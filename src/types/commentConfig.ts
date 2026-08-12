@@ -3,7 +3,14 @@ export type CommentConfig = {
 	 * 当前启用的评论系统类型
 	 * "none" | "twikoo" | "waline" | "giscus" | "disqus" | 'artalk'
 	 */
-	type: "none" | "twikoo" | "waline" | "giscus" | "disqus" | "artalk";
+	type:
+		| "none"
+		| "twikoo"
+		| "waline"
+		| "giscus"
+		| "disqus"
+		| "artalk"
+		| "ustinus";
 	twikoo?: {
 		envId: string;
 		region?: string;
