@@ -334,6 +334,7 @@ function renderContent(text) {
         <div class="flex items-center gap-2">
           <span class="text-sm" style="color: var(--btn-content)">{user.username}</span>
           <button onclick={doLogout} class="text-xs cursor-pointer" style="color: var(--content-meta)">退出</button>
+          <button onclick={doDeleteAccount} class="text-xs cursor-pointer" style="color: #ef4444">注销</button>
         </div>
       {/if}
     </div>
