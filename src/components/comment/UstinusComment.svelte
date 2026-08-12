@@ -269,25 +269,47 @@ function renderContent(text) {
     </div>
 
     {#if !user && !showLogin}
-      <div class="rounded-xl border p-4 flex items-center justify-between" style="border-color: var(--line-divider); background: var(--btn-regular-bg)">
-        <span class="text-sm" style="color: var(--content-meta)">登录后参与讨论</span>
-        <button onclick={() => { showLogin = true; loginError = ""; registerMode = false; }} class="px-4 py-2 rounded-lg text-white text-sm font-medium transition-opacity hover:opacity-90" style="background: var(--primary)">登录 / 注册</button>
+      <div class="rounded-xl border p-5 flex items-center justify-between" style="border-color: var(--line-divider); background: var(--btn-regular-bg)">
+        <div>
+          <p class="text-sm font-medium" style="color: var(--btn-content)">参与讨论</p>
+          <p class="text-xs mt-0.5" style="color: var(--content-meta)">登录后可以发表评论、上传图片</p>
+        </div>
+        <button onclick={() => { showLogin = true; loginError = ""; registerMode = false; }} class="px-5 py-2.5 rounded-lg text-white text-sm font-medium transition-opacity hover:opacity-90 shrink-0" style="background: var(--primary)">登录 / 注册</button>
       </div>
     {/if}
 
     {#if showLogin}
-      <div class="rounded-xl border p-5" style="border-color: var(--line-divider); background: var(--btn-regular-bg)">
-        <h4 class="text-sm font-semibold mb-4" style="color: var(--btn-content)">{registerMode ? "创建账号" : "登录账号"}</h4>
-        {#if registerMode}
-          <input bind:value={registerName} type="text" placeholder="用户名" class="w-full mb-3 px-3 py-2.5 rounded-lg border text-sm" style="border-color:var(--line-divider);background:var(--card-bg);color:var(--btn-content)" />
-        {/if}
-        <input bind:value={loginEmail} type="email" placeholder="邮箱" class="w-full mb-3 px-3 py-2.5 rounded-lg border text-sm" style="border-color:var(--line-divider);background:var(--card-bg);color:var(--btn-content)" />
-        <input bind:value={loginPassword} type="password" placeholder="密码" class="w-full mb-3 px-3 py-2.5 rounded-lg border text-sm" style="border-color:var(--line-divider);background:var(--card-bg);color:var(--btn-content)" />
-        {#if loginError}<p class="text-red-500 text-xs mb-3">{loginError}</p>{/if}
-        <div class="flex items-center gap-3">
-          <button onclick={registerMode ? doRegister : doLogin} class="px-5 py-2 rounded-lg text-white text-sm font-medium transition-opacity hover:opacity-90" style="background: var(--primary)">{registerMode ? "注册" : "登录"}</button>
-          <button onclick={() => { registerMode = !registerMode; loginError = ""; }} class="text-sm cursor-pointer" style="color: var(--primary)">{registerMode ? "← 返回登录" : "没有账号？注册"}</button>
-          <button onclick={() => { showLogin = false; loginError = ""; }} class="text-sm ml-auto cursor-pointer" style="color: var(--content-meta)">取消</button>
+      <div class="rounded-xl border overflow-hidden" style="border-color: var(--line-divider); background: var(--card-bg)">
+        <div class="flex border-b" style="border-color: var(--line-divider)">
+          <button onclick={() => { registerMode = false; loginError = ""; }} class="flex-1 py-3 text-sm font-medium transition-colors" style="color: var(--btn-content); border-bottom: 2px solid var(--primary)">登录</button>
+          <button onclick={() => { registerMode = true; loginError = ""; }} class="flex-1 py-3 text-sm font-medium transition-colors" style="color: var(--content-meta); border-bottom: 2px solid transparent">注册</button>
+        </div>
+        <div class="p-5">
+          {#if registerMode}
+            <div class="mb-3">
+              <label class="block text-xs font-medium mb-1.5" style="color: var(--btn-content)">用户名</label>
+              <input bind:value={registerName} type="text" placeholder="至少 2 个字符" class="w-full px-3 py-2.5 rounded-lg border text-sm" style="border-color:var(--line-divider);background:var(--btn-regular-bg);color:var(--btn-content)" />
+            </div>
+          {/if}
+          <div class="mb-3">
+            <label class="block text-xs font-medium mb-1.5" style="color: var(--btn-content)">邮箱</label>
+            <input bind:value={loginEmail} type="email" placeholder="your@email.com" class="w-full px-3 py-2.5 rounded-lg border text-sm" style="border-color:var(--line-divider);background:var(--btn-regular-bg);color:var(--btn-content)" />
+          </div>
+          <div class="mb-3">
+            <label class="block text-xs font-medium mb-1.5" style="color: var(--btn-content)">密码</label>
+            <input bind:value={loginPassword} type="password" placeholder="输入密码" class="w-full px-3 py-2.5 rounded-lg border text-sm" style="border-color:var(--line-divider);background:var(--btn-regular-bg);color:var(--btn-content)" />
+          </div>
+          {#if registerMode}
+            <div class="mb-4">
+              <label class="block text-xs font-medium mb-1.5" style="color: var(--btn-content)">确认密码</label>
+              <input bind:value={loginConfirm} type="password" placeholder="再次输入密码" class="w-full px-3 py-2.5 rounded-lg border text-sm" style="border-color:var(--line-divider);background:var(--btn-regular-bg);color:var(--btn-content)" />
+            </div>
+          {/if}
+          {#if loginError}
+            <p class="text-red-500 text-xs mb-3">{loginError}</p>
+          {/if}
+          <button onclick={registerMode ? doRegister : doLogin} class="w-full py-2.5 rounded-lg text-white text-sm font-medium transition-opacity hover:opacity-90" style="background: var(--primary)">{registerMode ? "创建账号" : "登录"}</button>
+          <button onclick={() => { showLogin = false; loginError = ""; }} class="w-full mt-2 py-2 text-xs cursor-pointer rounded-lg transition-colors" style="color: var(--content-meta)">取消</button>
         </div>
       </div>
     {/if}
