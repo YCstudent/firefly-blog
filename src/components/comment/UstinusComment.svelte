@@ -76,19 +76,19 @@ const emojis = [
 ];
 
 $effect(() => {
-    if (showLogin && registerMode && !turnstileRendered) {
-      setTimeout(() => {
-        const el = document.querySelector('.cf-turnstile');
-        if (el && window.turnstile) {
-          window.turnstile.render(el);
-          turnstileRendered = true;
-        }
-      }, 100);
-    }
-    if (!showLogin) turnstileRendered = false;
-  });
+	if (showLogin && registerMode && !turnstileRendered) {
+		setTimeout(() => {
+			const el = document.querySelector(".cf-turnstile");
+			if (el && window.turnstile) {
+				window.turnstile.render(el);
+				turnstileRendered = true;
+			}
+		}, 100);
+	}
+	if (!showLogin) turnstileRendered = false;
+});
 
-  onMount(async () => {
+onMount(async () => {
 	const savedToken = localStorage.getItem("ustinus_token") || "";
 	const savedUser = localStorage.getItem("ustinus_user");
 	if (savedToken && savedUser) {
