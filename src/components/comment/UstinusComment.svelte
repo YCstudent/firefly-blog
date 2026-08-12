@@ -296,8 +296,8 @@ function renderContent(text) {
     {#if showLogin}
       <div class="rounded-xl border overflow-hidden" style="border-color: var(--line-divider); background: var(--card-bg)">
         <div class="flex border-b" style="border-color: var(--line-divider)">
-          <button onclick={() => { registerMode = false; loginError = ""; }} class="flex-1 py-3 text-sm font-medium transition-colors" style="color: var(--btn-content); border-bottom: 2px solid var(--primary)">登录</button>
-          <button onclick={() => { registerMode = true; loginError = ""; }} class="flex-1 py-3 text-sm font-medium transition-colors" style="color: var(--content-meta); border-bottom: 2px solid transparent">注册</button>
+          <button onclick={() => { registerMode = false; loginError = ""; turnstileRendered = false; }} class="flex-1 py-3 text-sm font-medium transition-colors" style="color: {!registerMode ? 'var(--btn-content)' : 'var(--content-meta)'}; border-bottom: 2px solid {!registerMode ? 'var(--primary)' : 'transparent'}">登录</button>
+          <button onclick={() => { registerMode = true; loginError = ""; turnstileRendered = false; }} class="flex-1 py-3 text-sm font-medium transition-colors" style="color: {registerMode ? 'var(--btn-content)' : 'var(--content-meta)'}; border-bottom: 2px solid {registerMode ? 'var(--primary)' : 'transparent'}">注册</button>
         </div>
         <div class="p-5">
           {#if registerMode}
@@ -319,10 +319,10 @@ function renderContent(text) {
               <label class="block text-xs font-medium mb-1.5" style="color: var(--btn-content)">确认密码</label>
               <input bind:value={loginConfirm} type="password" placeholder="再次输入密码" class="w-full px-3 py-2.5 rounded-lg border text-sm" style="border-color:var(--line-divider);background:var(--btn-regular-bg);color:var(--btn-content)" />
             </div>
-            <div class="mb-4 flex justify-center">
-              <div class="cf-turnstile" data-sitekey="0x4AAAAAAEN2y0SVTceMvqdv" data-action="register"></div>
-            </div>
           {/if}
+          <div class="mb-4">
+            <div class="cf-turnstile" data-sitekey="0x4AAAAAAEN2y0SVTceMvqdv" data-action={registerMode ? "register" : "login"}></div>
+          </div>
           {#if loginError}
             <p class="text-red-500 text-xs mb-3">{loginError}</p>
           {/if}
