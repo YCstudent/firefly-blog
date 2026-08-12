@@ -1,123 +1,145 @@
 <script>
-  import { onMount } from "svelte";
+import { onMount } from "svelte";
 
-  let { pageSlug = "" } = $props();
+let { pageSlug = "" } = $props();
 
-  let comments = $state([]);
-  let user = $state(null);
-  let token = $state("");
-  let content = $state("");
-  let loading = $state(true);
-  let submitting = $state(false);
-  let showLogin = $state(false);
-  let loginEmail = $state("");
-  let loginPassword = $state("");
-  let loginError = $state("");
-  let registerMode = $state(false);
-  let registerName = $state("");
+let comments = $state([]);
+let user = $state(null);
+let token = $state("");
+let content = $state("");
+let loading = $state(true);
+let submitting = $state(false);
+let showLogin = $state(false);
+let loginEmail = $state("");
+let loginPassword = $state("");
+let loginError = $state("");
+let registerMode = $state(false);
+let registerName = $state("");
 
-  const API = "https://ustinus-api.2917321268.workers.dev";
+const API = "https://api.202886.xyz";
 
-  onMount(async () => {
-    const savedToken = localStorage.getItem("ustinus_token") || "";
-    const savedUser = localStorage.getItem("ustinus_user");
-    if (savedToken && savedUser) {
-      token = savedToken;
-      user = JSON.parse(savedUser);
-    }
-    await loadComments();
-  });
+onMount(async () => {
+	const savedToken = localStorage.getItem("ustinus_token") || "";
+	const savedUser = localStorage.getItem("ustinus_user");
+	if (savedToken && savedUser) {
+		token = savedToken;
+		user = JSON.parse(savedUser);
+	}
+	await loadComments();
+});
 
-  async function loadComments() {
-    loading = true;
-    try {
-      const res = await fetch(`${API}/api/comments?slug=${encodeURIComponent(pageSlug)}`);
-      const data = await res.json();
-      comments = data.comments || [];
-    } catch(e) { console.error(e); }
-    loading = false;
-  }
+async function loadComments() {
+	loading = true;
+	try {
+		const res = await fetch(
+			`${API}/api/comments?slug=${encodeURIComponent(pageSlug)}`,
+		);
+		const data = await res.json();
+		comments = data.comments || [];
+	} catch (e) {
+		console.error(e);
+	}
+	loading = false;
+}
 
-  async function doLogin() {
-    loginError = "";
-    try {
-      const res = await fetch(`${API}/api/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: loginEmail, password: loginPassword }),
-      });
-      const data = await res.json();
-      if (data.error) { loginError = data.error; return; }
-      user = data.user;
-      token = data.token;
-      localStorage.setItem("ustinus_token", token);
-      localStorage.setItem("ustinus_user", JSON.stringify(user));
-      showLogin = false;
-      loginEmail = "";
-      loginPassword = "";
-    } catch(e) { loginError = "网络错误，请重试"; }
-  }
+async function doLogin() {
+	loginError = "";
+	try {
+		const res = await fetch(`${API}/api/auth/login`, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ email: loginEmail, password: loginPassword }),
+		});
+		const data = await res.json();
+		if (data.error) {
+			loginError = data.error;
+			return;
+		}
+		user = data.user;
+		token = data.token;
+		localStorage.setItem("ustinus_token", token);
+		localStorage.setItem("ustinus_user", JSON.stringify(user));
+		showLogin = false;
+		loginEmail = "";
+		loginPassword = "";
+	} catch (e) {
+		loginError = "网络错误，请重试";
+	}
+}
 
-  async function doRegister() {
-    loginError = "";
-    try {
-      const res = await fetch(`${API}/api/auth/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: registerName, email: loginEmail, password: loginPassword }),
-      });
-      const data = await res.json();
-      if (data.error) { loginError = data.error; return; }
-      user = data.user;
-      token = data.token;
-      localStorage.setItem("ustinus_token", token);
-      localStorage.setItem("ustinus_user", JSON.stringify(user));
-      showLogin = false;
-      registerMode = false;
-      loginEmail = "";
-      loginPassword = "";
-      registerName = "";
-    } catch(e) { loginError = "网络错误，请重试"; }
-  }
+async function doRegister() {
+	loginError = "";
+	try {
+		const res = await fetch(`${API}/api/auth/register`, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({
+				username: registerName,
+				email: loginEmail,
+				password: loginPassword,
+			}),
+		});
+		const data = await res.json();
+		if (data.error) {
+			loginError = data.error;
+			return;
+		}
+		user = data.user;
+		token = data.token;
+		localStorage.setItem("ustinus_token", token);
+		localStorage.setItem("ustinus_user", JSON.stringify(user));
+		showLogin = false;
+		registerMode = false;
+		loginEmail = "";
+		loginPassword = "";
+		registerName = "";
+	} catch (e) {
+		loginError = "网络错误，请重试";
+	}
+}
 
-  function doLogout() {
-    user = null; token = "";
-    localStorage.removeItem("ustinus_token");
-    localStorage.removeItem("ustinus_user");
-  }
+function doLogout() {
+	user = null;
+	token = "";
+	localStorage.removeItem("ustinus_token");
+	localStorage.removeItem("ustinus_user");
+}
 
-  async function doSubmit() {
-    if (!content.trim() || submitting) return;
-    submitting = true;
-    await fetch(`${API}/api/comments`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-      body: JSON.stringify({ page_slug: pageSlug, content: content.trim() }),
-    });
-    content = "";
-    submitting = false;
-    await loadComments();
-  }
+async function doSubmit() {
+	if (!content.trim() || submitting) return;
+	submitting = true;
+	await fetch(`${API}/api/comments`, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+			Authorization: `Bearer ${token}`,
+		},
+		body: JSON.stringify({ page_slug: pageSlug, content: content.trim() }),
+	});
+	content = "";
+	submitting = false;
+	await loadComments();
+}
 
-  async function doDelete(id) {
-    await fetch(`${API}/api/comments/${id}`, {
-      method: "DELETE",
-      headers: { "Authorization": `Bearer ${token}` },
-    });
-    await loadComments();
-  }
+async function doDelete(id) {
+	await fetch(`${API}/api/comments/${id}`, {
+		method: "DELETE",
+		headers: { Authorization: `Bearer ${token}` },
+	});
+	await loadComments();
+}
 
-  function timeAgo(dateStr) {
-    const diff = Date.now() - new Date(dateStr).getTime();
-    const m = Math.floor(diff / 60000);
-    if (m < 1) return "刚刚";
-    if (m < 60) return `${m} 分钟前`;
-    const h = Math.floor(m / 60);
-    if (h < 24) return `${h} 小时前`;
-    const d = Math.floor(h / 24);
-    if (d < 30) return `${d} 天前`;
-    return new Date(dateStr).toLocaleDateString("zh-CN");
-  }
+function timeAgo(dateStr) {
+	const diff = Date.now() - new Date(dateStr).getTime();
+	const m = Math.floor(diff / 60000);
+	if (m < 1) return "刚刚";
+	if (m < 60) return `${m} 分钟前`;
+	const h = Math.floor(m / 60);
+	if (h < 24) return `${h} 小时前`;
+	const d = Math.floor(h / 24);
+	if (d < 30) return `${d} 天前`;
+	return new Date(dateStr).toLocaleDateString("zh-CN");
+}
 </script>
 
 <div class="ustinus-comments">
