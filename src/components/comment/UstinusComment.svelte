@@ -1,5 +1,5 @@
 <script>
-import { onMount, tick } from "svelte";
+import { onMount } from "svelte";
 
 let turnstileRendered = false;
 
@@ -325,15 +325,15 @@ function renderContent(text) {
           <p class="text-sm font-medium" style="color: var(--btn-content)">参与讨论</p>
           <p class="text-xs mt-0.5" style="color: var(--content-meta)">登录后可以发表评论、上传图片</p>
         </div>
-        <button onclick={() => { showLogin = true; loginError = ""; registerMode = false; }} class="px-5 py-2.5 rounded-lg text-white text-sm font-medium transition-opacity hover:opacity-90 shrink-0" style="background: var(--primary)">登录 / 注册</button>
+        <button onclick={() => { showLogin = true; loginError = ""; registerMode = false; setTimeout(renderTurnstile, 50); }} class="px-5 py-2.5 rounded-lg text-white text-sm font-medium transition-opacity hover:opacity-90 shrink-0" style="background: var(--primary)">登录 / 注册</button>
       </div>
     {/if}
 
     {#if showLogin}
       <div class="rounded-xl border overflow-hidden" style="border-color: var(--line-divider); background: var(--card-bg)">
         <div class="flex border-b" style="border-color: var(--line-divider)">
-          <button onclick={() => { registerMode = false; loginError = ""; turnstileRendered = false; }} class="flex-1 py-3 text-sm font-medium transition-colors" style="color: {!registerMode ? 'var(--btn-content)' : 'var(--content-meta)'}; border-bottom: 2px solid {!registerMode ? 'var(--primary)' : 'transparent'}">登录</button>
-          <button onclick={() => { registerMode = true; loginError = ""; turnstileRendered = false; }} class="flex-1 py-3 text-sm font-medium transition-colors" style="color: {registerMode ? 'var(--btn-content)' : 'var(--content-meta)'}; border-bottom: 2px solid {registerMode ? 'var(--primary)' : 'transparent'}">注册</button>
+          <button onclick={() => { registerMode = false; loginError = ""; turnstileRendered = false; setTimeout(renderTurnstile, 50); }} class="flex-1 py-3 text-sm font-medium transition-colors" style="color: {!registerMode ? 'var(--btn-content)' : 'var(--content-meta)'}; border-bottom: 2px solid {!registerMode ? 'var(--primary)' : 'transparent'}">登录</button>
+          <button onclick={() => { registerMode = true; loginError = ""; turnstileRendered = false; setTimeout(renderTurnstile, 50); }} class="flex-1 py-3 text-sm font-medium transition-colors" style="color: {registerMode ? 'var(--btn-content)' : 'var(--content-meta)'}; border-bottom: 2px solid {registerMode ? 'var(--primary)' : 'transparent'}">注册</button>
         </div>
         <div class="p-5">
           {#if registerMode}
