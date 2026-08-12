@@ -1,149 +1,160 @@
 <script>
-import { onMount } from "svelte";
+  import { onMount } from "svelte";
 
-let { pageSlug = "" } = $props();
+  let { pageSlug = "" } = $props();
 
-let comments = $state([]);
-let user = $state(null);
-let token = $state("");
-let content = $state("");
-let loading = $state(true);
-let submitting = $state(false);
-let showLogin = $state(false);
-let loginEmail = $state("");
-let loginPassword = $state("");
-let loginError = $state("");
-let registerMode = $state(false);
-let registerName = $state("");
+  let comments = $state([]);
+  let user = $state(null);
+  let token = $state("");
+  let content = $state("");
+  let loading = $state(true);
+  let submitting = $state(false);
+  let showLogin = $state(false);
+  let loginEmail = $state("");
+  let loginPassword = $state("");
+  let loginError = $state("");
+  let registerMode = $state(false);
+  let registerName = $state("");
+  let showEmoji = $state(false);
+  let uploading = $state(false);
 
-const API = "https://api.202886.xyz";
+  const API = "https://api.202886.xyz";
 
-onMount(async () => {
-	const savedToken = localStorage.getItem("ustinus_token") || "";
-	const savedUser = localStorage.getItem("ustinus_user");
-	if (savedToken && savedUser) {
-		token = savedToken;
-		user = JSON.parse(savedUser);
-	}
-	await loadComments();
-});
+  const emojis = "😀😂🤣😊😍🤩😎🤔😅😭🤯🥳😇🙃🤗😴🤐😤😡🤬💀👻👽🤖🎉❤️🔥⭐💯✅❌🤝👏🙌💪🧠👀🦾🌈☀️🌙⚡💧🍕🎮📚💻🚀🎯🏆".split("");
 
-async function loadComments() {
-	loading = true;
-	try {
-		const res = await fetch(
-			`${API}/api/comments?slug=${encodeURIComponent(pageSlug)}`,
-		);
-		const data = await res.json();
-		comments = data.comments || [];
-	} catch (e) {
-		console.error(e);
-	}
-	loading = false;
-}
+  onMount(async () => {
+    const savedToken = localStorage.getItem("ustinus_token") || "";
+    const savedUser = localStorage.getItem("ustinus_user");
+    if (savedToken && savedUser) {
+      token = savedToken;
+      user = JSON.parse(savedUser);
+    }
+    await loadComments();
+  });
 
-async function doLogin() {
-	loginError = "";
-	try {
-		const res = await fetch(`${API}/api/auth/login`, {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ email: loginEmail, password: loginPassword }),
-		});
-		const data = await res.json();
-		if (data.error) {
-			loginError = data.error;
-			return;
-		}
-		user = data.user;
-		token = data.token;
-		localStorage.setItem("ustinus_token", token);
-		localStorage.setItem("ustinus_user", JSON.stringify(user));
-		showLogin = false;
-		loginEmail = "";
-		loginPassword = "";
-	} catch (e) {
-		loginError = "网络错误，请重试";
-	}
-}
+  async function loadComments() {
+    loading = true;
+    try {
+      const res = await fetch(`${API}/api/comments?slug=${encodeURIComponent(pageSlug)}`);
+      const data = await res.json();
+      comments = data.comments || [];
+    } catch(e) { console.error(e); }
+    loading = false;
+  }
 
-async function doRegister() {
-	loginError = "";
-	try {
-		const res = await fetch(`${API}/api/auth/register`, {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({
-				username: registerName,
-				email: loginEmail,
-				password: loginPassword,
-			}),
-		});
-		const data = await res.json();
-		if (data.error) {
-			loginError = data.error;
-			return;
-		}
-		user = data.user;
-		token = data.token;
-		localStorage.setItem("ustinus_token", token);
-		localStorage.setItem("ustinus_user", JSON.stringify(user));
-		showLogin = false;
-		registerMode = false;
-		loginEmail = "";
-		loginPassword = "";
-		registerName = "";
-	} catch (e) {
-		loginError = "网络错误，请重试";
-	}
-}
+  async function doLogin() {
+    loginError = "";
+    try {
+      const res = await fetch(`${API}/api/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: loginEmail, password: loginPassword }),
+      });
+      const data = await res.json();
+      if (data.error) { loginError = data.error; return; }
+      user = data.user;
+      token = data.token;
+      localStorage.setItem("ustinus_token", token);
+      localStorage.setItem("ustinus_user", JSON.stringify(user));
+      showLogin = false;
+      loginEmail = "";
+      loginPassword = "";
+    } catch(e) { loginError = "网络错误，请重试"; }
+  }
 
-function doLogout() {
-	user = null;
-	token = "";
-	localStorage.removeItem("ustinus_token");
-	localStorage.removeItem("ustinus_user");
-}
+  async function doRegister() {
+    loginError = "";
+    try {
+      const res = await fetch(`${API}/api/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: registerName, email: loginEmail, password: loginPassword }),
+      });
+      const data = await res.json();
+      if (data.error) { loginError = data.error; return; }
+      user = data.user;
+      token = data.token;
+      localStorage.setItem("ustinus_token", token);
+      localStorage.setItem("ustinus_user", JSON.stringify(user));
+      showLogin = false;
+      registerMode = false;
+      loginEmail = "";
+      loginPassword = "";
+      registerName = "";
+    } catch(e) { loginError = "网络错误，请重试"; }
+  }
 
-async function doSubmit() {
-	if (!content.trim() || submitting) return;
-	submitting = true;
-	await fetch(`${API}/api/comments`, {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-			Authorization: `Bearer ${token}`,
-		},
-		body: JSON.stringify({ page_slug: pageSlug, content: content.trim() }),
-	});
-	content = "";
-	submitting = false;
-	await loadComments();
-}
+  function doLogout() {
+    user = null; token = "";
+    localStorage.removeItem("ustinus_token");
+    localStorage.removeItem("ustinus_user");
+  }
 
-async function doDelete(id) {
-	await fetch(`${API}/api/comments/${id}`, {
-		method: "DELETE",
-		headers: { Authorization: `Bearer ${token}` },
-	});
-	await loadComments();
-}
+  function insertEmoji(emoji) {
+    content += emoji;
+    showEmoji = false;
+  }
 
-function timeAgo(dateStr) {
-	const diff = Date.now() - new Date(dateStr).getTime();
-	const m = Math.floor(diff / 60000);
-	if (m < 1) return "刚刚";
-	if (m < 60) return `${m} 分钟前`;
-	const h = Math.floor(m / 60);
-	if (h < 24) return `${h} 小时前`;
-	const d = Math.floor(h / 24);
-	if (d < 30) return `${d} 天前`;
-	return new Date(dateStr).toLocaleDateString("zh-CN");
-}
+  async function handleImageUpload(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    uploading = true;
+    try {
+      const form = new FormData();
+      form.append("file", file);
+      const res = await fetch(`${API}/api/upload`, {
+        method: "POST",
+        headers: { "Authorization": `Bearer ${token}` },
+        body: form,
+      });
+      const data = await res.json();
+      if (data.url) content += `\n![图片](${data.url})\n`;
+    } catch(e) { console.error(e); }
+    uploading = false;
+  }
+
+  async function doSubmit() {
+    if (!content.trim() || submitting) return;
+    submitting = true;
+    await fetch(`${API}/api/comments`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+      body: JSON.stringify({ page_slug: pageSlug, content: content.trim() }),
+    });
+    content = "";
+    submitting = false;
+    await loadComments();
+  }
+
+  async function doDelete(id) {
+    if (!confirm("确认删除这条评论？")) return;
+    await fetch(`${API}/api/comments/${id}`, {
+      method: "DELETE",
+      headers: { "Authorization": `Bearer ${token}` },
+    });
+    await loadComments();
+  }
+
+  function timeAgo(dateStr) {
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const m = Math.floor(diff / 60000);
+    if (m < 1) return "刚刚";
+    if (m < 60) return `${m} 分钟前`;
+    const h = Math.floor(m / 60);
+    if (h < 24) return `${h} 小时前`;
+    return new Date(dateStr).toLocaleDateString("zh-CN");
+  }
+
+  function renderContent(text) {
+    // Replace ![图片](url) with img tag
+    if (!text) return "";
+    return text
+      .replace(/!\[.*?\]\((https?:\/\/[^\s)]+)\)/g, '<img src="$1" class="max-w-full rounded-lg my-2" loading="lazy" alt="图片" />')
+      .replace(/\n/g, "<br>");
+  }
 </script>
 
 <div class="ustinus-comments">
-  <!-- Header + login area -->
   <div class="mb-6">
     <div class="flex items-center justify-between mb-4">
       <h3 class="text-lg font-bold" style="color: var(--btn-content)">评论 ({comments.length})</h3>
@@ -155,7 +166,6 @@ function timeAgo(dateStr) {
       {/if}
     </div>
 
-    <!-- Not logged in: show login prompt with style -->
     {#if !user && !showLogin}
       <div class="rounded-xl border p-4 flex items-center justify-between" style="border-color: var(--line-divider); background: var(--btn-regular-bg)">
         <span class="text-sm" style="color: var(--content-meta)">登录后参与讨论</span>
@@ -165,7 +175,6 @@ function timeAgo(dateStr) {
       </div>
     {/if}
 
-    <!-- Login/Register form -->
     {#if showLogin}
       <div class="rounded-xl border p-5" style="border-color: var(--line-divider); background: var(--btn-regular-bg)">
         <h4 class="text-sm font-semibold mb-4" style="color: var(--btn-content)">{registerMode ? "创建账号" : "登录账号"}</h4>
@@ -190,20 +199,44 @@ function timeAgo(dateStr) {
     {/if}
   </div>
 
-  <!-- Comment input -->
   {#if user}
     <div class="mb-6 flex gap-3">
-      <div class="w-9 h-9 rounded-full shrink-0 flex items-center justify-center text-white text-sm font-bold" style="background: var(--primary)">{user.username[0]?.toUpperCase() || "U"}</div>
+      <div class="w-9 h-9 rounded-full shrink-0 flex items-center justify-center text-white text-sm font-bold overflow-hidden" style="background: var(--primary)">
+        {#if user.avatar_url}
+          <img src={user.avatar_url} alt="" class="w-full h-full object-cover" />
+        {:else}
+          {user.username[0]?.toUpperCase() || "U"}
+        {/if}
+      </div>
       <div class="flex-1">
-        <textarea bind:value={content} rows="3" placeholder="写下你的想法..." class="w-full px-4 py-3 rounded-xl border resize-none text-sm focus:outline-none" style="border-color:var(--line-divider);background:var(--card-bg);color:var(--btn-content)"></textarea>
-        <div class="flex justify-end mt-2">
+        <textarea bind:value={content} rows="3" placeholder="写下你的想法... Markdown 语法和表情包都支持" class="w-full px-4 py-3 rounded-xl border resize-none text-sm focus:outline-none" style="border-color:var(--line-divider);background:var(--card-bg);color:var(--btn-content)"></textarea>
+        <div class="flex items-center justify-between mt-2">
+          <div class="flex items-center gap-2">
+            <!-- Emoji toggle -->
+            <div class="relative">
+              <button onclick={() => showEmoji = !showEmoji} class="w-8 h-8 rounded-lg flex items-center justify-center text-lg cursor-pointer transition-colors hover:opacity-80" style="background: var(--btn-regular-bg)" title="表情">
+                😊
+              </button>
+              {#if showEmoji}
+                <div class="absolute bottom-full left-0 mb-2 p-2 rounded-xl border shadow-lg grid grid-cols-10 gap-1 z-50 max-h-48 overflow-y-auto" style="background:var(--card-bg);border-color:var(--line-divider)">
+                  {#each emojis as emoji}
+                    <button onclick={() => insertEmoji(emoji)} class="w-7 h-7 flex items-center justify-center text-base rounded hover:opacity-80 cursor-pointer" style="background:var(--btn-regular-bg)">{emoji}</button>
+                  {/each}
+                </div>
+              {/if}
+            </div>
+            <!-- Image upload -->
+            <label class="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer transition-colors hover:opacity-80 {uploading ? 'opacity-50' : ''}" style="background: var(--btn-regular-bg)" title="上传图片">
+              <svg class="w-4 h-4" style="color: var(--btn-content)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+              <input type="file" accept="image/*" class="hidden" onchange={(e) => handleImageUpload(e)} disabled={uploading} />
+            </label>
+          </div>
           <button onclick={doSubmit} disabled={submitting || !content.trim()} class="px-5 py-2 rounded-lg text-white text-sm font-medium transition-opacity disabled:opacity-50 hover:opacity-90" style="background: var(--primary)">{submitting ? "提交中..." : "发表评论"}</button>
         </div>
       </div>
     </div>
   {/if}
 
-  <!-- Comment list -->
   {#if loading}
     <div class="text-center py-8 text-sm" style="color: var(--content-meta)">加载中...</div>
   {:else if comments.length === 0}
@@ -215,16 +248,24 @@ function timeAgo(dateStr) {
     <div class="space-y-5">
       {#each comments as comment (comment.id)}
         <div class="flex gap-3">
-          <div class="w-9 h-9 rounded-full shrink-0 flex items-center justify-center text-white text-sm font-bold" style="background: var(--primary)">{comment.username[0]?.toUpperCase() || "?"}</div>
+          <div class="w-9 h-9 rounded-full shrink-0 flex items-center justify-center text-white text-sm font-bold overflow-hidden" style="background: var(--primary)">
+            {#if comment.avatar_url}
+              <img src={comment.avatar_url} alt="" class="w-full h-full object-cover" />
+            {:else}
+              {comment.username[0]?.toUpperCase() || "?"}
+            {/if}
+          </div>
           <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2 mb-1">
+            <div class="flex items-center gap-2 mb-2">
               <span class="text-sm font-semibold" style="color: var(--btn-content)">{comment.username}</span>
               <span class="text-xs" style="color: var(--content-meta)">{timeAgo(comment.created_at)}</span>
               {#if user && user.id === comment.user_id}
-                <button onclick={() => doDelete(comment.id)} class="ml-auto text-xs cursor-pointer" style="color: var(--content-meta)">删除</button>
+                <button onclick={() => doDelete(comment.id)} class="ml-auto text-xs cursor-pointer" style="color: var(--content-meta)" title="删除评论">🗑️</button>
               {/if}
             </div>
-            <p class="text-sm leading-relaxed" style="color: var(--btn-content)">{comment.content}</p>
+            <div class="text-sm leading-relaxed" style="color: var(--btn-content)">
+              {@html renderContent(comment.content)}
+            </div>
           </div>
         </div>
       {/each}
