@@ -15,7 +15,8 @@ export const sponsorConfig: SponsorConfig = {
 		{
 			name: "支付宝",
 			icon: "fa7-brands:alipay",
-			qrCode: "https://pub-c1824a6cf1a3422a928b777bbe1c7ef6.r2.dev/qrcodes/alipay.jpg",
+			qrCode:
+				"https://pub-c1824a6cf1a3422a928b777bbe1c7ef6.r2.dev/qrcodes/alipay.jpg",
 			link: "",
 			description: "使用 支付宝 扫码打赏",
 			enabled: true,
@@ -23,7 +24,8 @@ export const sponsorConfig: SponsorConfig = {
 		{
 			name: "微信",
 			icon: "fa7-brands:weixin",
-			qrCode: "https://pub-c1824a6cf1a3422a928b777bbe1c7ef6.r2.dev/qrcodes/wechat.jpg",
+			qrCode:
+				"https://pub-c1824a6cf1a3422a928b777bbe1c7ef6.r2.dev/qrcodes/wechat.jpg",
 			link: "",
 			description: "使用 微信 扫码打赏",
 			enabled: true,
