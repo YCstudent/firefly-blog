@@ -163,7 +163,10 @@ async function doLogin() {
 
 async function doRegister() {
 	loginError = "";
-	if (!emailVerified) { loginError = "请先验证邮箱"; return; }
+	if (!emailVerified) {
+		loginError = "请先验证邮箱";
+		return;
+	}
 	if (!registerName.trim()) {
 		loginError = "请输入用户名";
 		return;
