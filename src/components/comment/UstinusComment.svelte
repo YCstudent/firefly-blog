@@ -76,17 +76,23 @@ const emojis = [
 ];
 
 $effect(() => {
-	if (showLogin && registerMode && !turnstileRendered) {
-		setTimeout(() => {
-			const el = document.querySelector(".cf-turnstile");
-			if (el && window.turnstile) {
-				window.turnstile.render(el);
-				turnstileRendered = true;
-			}
-		}, 100);
-	}
-	if (!showLogin) turnstileRendered = false;
-});
+		if (showLogin && !turnstileRendered) {
+			setTimeout(() => {
+				const el = document.getElementById("ts-container");
+				if (!el) return;
+				if (window.turnstile) {
+					el.innerHTML = "";
+					const div = document.createElement("div");
+					div.className = "cf-turnstile";
+					div.setAttribute("data-sitekey", "0x4AAAAAAEN2y0SVTceMvqdv");
+					el.appendChild(div);
+					window.turnstile.render(div, { size: "compact" });
+					turnstileRendered = true;
+				}
+			}, 300);
+		}
+		if (!showLogin) turnstileRendered = false;
+	})
 
 onMount(async () => {
 	const savedToken = localStorage.getItem("ustinus_token") || "";
