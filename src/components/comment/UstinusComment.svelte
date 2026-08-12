@@ -1,162 +1,257 @@
 <script>
-  import { onMount } from "svelte";
+import { onMount } from "svelte";
 
-  let { pageSlug = "" } = $props();
+let { pageSlug = "" } = $props();
 
-  let comments = $state([]);
-  let user = $state(null);
-  let token = $state("");
-  let content = $state("");
-  let loading = $state(true);
-  let submitting = $state(false);
-  let showLogin = $state(false);
-  let loginEmail = $state("");
-  let loginPassword = $state("");
-  let loginError = $state("");
-  let registerMode = $state(false);
-  let registerName = $state("");
-  let showEmoji = $state(false);
-  let uploading = $state(false);
+let comments = $state([]);
+let user = $state(null);
+let token = $state("");
+let content = $state("");
+let loading = $state(true);
+let submitting = $state(false);
+let showLogin = $state(false);
+let loginEmail = $state("");
+let loginPassword = $state("");
+let loginError = $state("");
+let registerMode = $state(false);
+let registerName = $state("");
+let showEmoji = $state(false);
+let uploading = $state(false);
 
-  const API = "https://api.202886.xyz";
+const API = "https://api.202886.xyz";
 
-  const emojis = [
-    "😀","😂","🤣","😊","😍","🤩","😎","🤔",
-    "😅","😭","🥳","😇","🙃","🤗","😴","🤐",
-    "😤","😡","💀","👻","👽","🤖","🎉","❤️",
-    "🔥","⭐","💯","✅","❌","🤝","👏","🙌",
-    "💪","🧠","👀","🌈","☀️","🌙","⚡","💧",
-    "🍕","🎮","📚","💻","🚀","🎯","🏆","👍",
-  ];
+const emojis = [
+	"😀",
+	"😂",
+	"🤣",
+	"😊",
+	"😍",
+	"🤩",
+	"😎",
+	"🤔",
+	"😅",
+	"😭",
+	"🥳",
+	"😇",
+	"🙃",
+	"🤗",
+	"😴",
+	"🤐",
+	"😤",
+	"😡",
+	"💀",
+	"👻",
+	"👽",
+	"🤖",
+	"🎉",
+	"❤️",
+	"🔥",
+	"⭐",
+	"💯",
+	"✅",
+	"❌",
+	"🤝",
+	"👏",
+	"🙌",
+	"💪",
+	"🧠",
+	"👀",
+	"🌈",
+	"☀️",
+	"🌙",
+	"⚡",
+	"💧",
+	"🍕",
+	"🎮",
+	"📚",
+	"💻",
+	"🚀",
+	"🎯",
+	"🏆",
+	"👍",
+];
 
-  onMount(async () => {
-    const savedToken = localStorage.getItem("ustinus_token") || "";
-    const savedUser = localStorage.getItem("ustinus_user");
-    if (savedToken && savedUser) {
-      token = savedToken;
-      user = JSON.parse(savedUser);
-    }
-    await loadComments();
-  });
+onMount(async () => {
+	const savedToken = localStorage.getItem("ustinus_token") || "";
+	const savedUser = localStorage.getItem("ustinus_user");
+	if (savedToken && savedUser) {
+		token = savedToken;
+		user = JSON.parse(savedUser);
+	}
+	await loadComments();
+});
 
-  async function loadComments() {
-    loading = true;
-    try {
-      const res = await fetch(`${API}/api/comments?slug=${encodeURIComponent(pageSlug)}`);
-      const data = await res.json();
-      comments = data.comments || [];
-    } catch(e) { console.error(e); }
-    loading = false;
-  }
+async function loadComments() {
+	loading = true;
+	try {
+		const res = await fetch(
+			`${API}/api/comments?slug=${encodeURIComponent(pageSlug)}`,
+		);
+		const data = await res.json();
+		comments = data.comments || [];
+	} catch (e) {
+		console.error(e);
+	}
+	loading = false;
+}
 
-  async function doLogin() {
-    loginError = "";
-    try {
-      const res = await fetch(`${API}/api/auth/login`, {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: loginEmail, password: loginPassword }),
-      });
-      const data = await res.json();
-      if (data.error) { loginError = data.error; return; }
-      user = data.user; token = data.token;
-      localStorage.setItem("ustinus_token", token);
-      localStorage.setItem("ustinus_user", JSON.stringify(user));
-      showLogin = false; loginEmail = ""; loginPassword = "";
-    } catch(e) { loginError = "网络错误，请重试"; }
-  }
+async function doLogin() {
+	loginError = "";
+	try {
+		const res = await fetch(`${API}/api/auth/login`, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ email: loginEmail, password: loginPassword }),
+		});
+		const data = await res.json();
+		if (data.error) {
+			loginError = data.error;
+			return;
+		}
+		user = data.user;
+		token = data.token;
+		localStorage.setItem("ustinus_token", token);
+		localStorage.setItem("ustinus_user", JSON.stringify(user));
+		showLogin = false;
+		loginEmail = "";
+		loginPassword = "";
+	} catch (e) {
+		loginError = "网络错误，请重试";
+	}
+}
 
-  async function doRegister() {
-    loginError = "";
-    try {
-      const res = await fetch(`${API}/api/auth/register`, {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: registerName, email: loginEmail, password: loginPassword }),
-      });
-      const data = await res.json();
-      if (data.error) { loginError = data.error; return; }
-      user = data.user; token = data.token;
-      localStorage.setItem("ustinus_token", token);
-      localStorage.setItem("ustinus_user", JSON.stringify(user));
-      showLogin = false; registerMode = false; loginEmail = ""; loginPassword = ""; registerName = "";
-    } catch(e) { loginError = "网络错误，请重试"; }
-  }
+async function doRegister() {
+	loginError = "";
+	try {
+		const res = await fetch(`${API}/api/auth/register`, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({
+				username: registerName,
+				email: loginEmail,
+				password: loginPassword,
+			}),
+		});
+		const data = await res.json();
+		if (data.error) {
+			loginError = data.error;
+			return;
+		}
+		user = data.user;
+		token = data.token;
+		localStorage.setItem("ustinus_token", token);
+		localStorage.setItem("ustinus_user", JSON.stringify(user));
+		showLogin = false;
+		registerMode = false;
+		loginEmail = "";
+		loginPassword = "";
+		registerName = "";
+	} catch (e) {
+		loginError = "网络错误，请重试";
+	}
+}
 
-  function doLogout() {
-    user = null; token = "";
-    localStorage.removeItem("ustinus_token");
-    localStorage.removeItem("ustinus_user");
-  }
+function doLogout() {
+	user = null;
+	token = "";
+	localStorage.removeItem("ustinus_token");
+	localStorage.removeItem("ustinus_user");
+}
 
-  function insertEmoji(emoji) { content += emoji; }
+function insertEmoji(emoji) {
+	content += emoji;
+}
 
-  async function handleImageUpload(e) {
-    const file = e.target.files?.[0];
-    if (!file) return; uploading = true;
-    try {
-      const form = new FormData(); form.append("file", file);
-      const res = await fetch(`${API}/api/upload`, {
-        method: "POST", headers: { Authorization: `Bearer ${token}` }, body: form,
-      });
-      const data = await res.json();
-      if (data.url) content += `\n![图片](${data.url})\n`;
-    } catch(e) { console.error(e); }
-    uploading = false; e.target.value = "";
-  }
+async function handleImageUpload(e) {
+	const file = e.target.files?.[0];
+	if (!file) return;
+	uploading = true;
+	try {
+		const form = new FormData();
+		form.append("file", file);
+		const res = await fetch(`${API}/api/upload`, {
+			method: "POST",
+			headers: { Authorization: `Bearer ${token}` },
+			body: form,
+		});
+		const data = await res.json();
+		if (data.url) content += `\n![图片](${data.url})\n`;
+	} catch (e) {
+		console.error(e);
+	}
+	uploading = false;
+	e.target.value = "";
+}
 
-  async function handleAvatarUpload(e) {
-    const file = e.target.files?.[0];
-    if (!file) return; uploading = true;
-    try {
-      const form = new FormData(); form.append("file", file);
-      const res = await fetch(`${API}/api/auth/avatar`, {
-        method: "POST", headers: { Authorization: `Bearer ${token}` }, body: form,
-      });
-      const data = await res.json();
-      if (data.url) {
-        user = { ...user, avatar_url: data.url };
-        localStorage.setItem("ustinus_user", JSON.stringify(user));
-        await loadComments();
-      }
-    } catch(e) { console.error(e); }
-    uploading = false; e.target.value = "";
-  }
+async function handleAvatarUpload(e) {
+	const file = e.target.files?.[0];
+	if (!file) return;
+	uploading = true;
+	try {
+		const form = new FormData();
+		form.append("file", file);
+		const res = await fetch(`${API}/api/auth/avatar`, {
+			method: "POST",
+			headers: { Authorization: `Bearer ${token}` },
+			body: form,
+		});
+		const data = await res.json();
+		if (data.url) {
+			user = { ...user, avatar_url: data.url };
+			localStorage.setItem("ustinus_user", JSON.stringify(user));
+			await loadComments();
+		}
+	} catch (e) {
+		console.error(e);
+	}
+	uploading = false;
+	e.target.value = "";
+}
 
-  async function doSubmit() {
-    if (!content.trim() || submitting) return;
-    submitting = true;
-    await fetch(`${API}/api/comments`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-      body: JSON.stringify({ page_slug: pageSlug, content: content.trim() }),
-    });
-    content = ""; submitting = false;
-    await loadComments();
-  }
+async function doSubmit() {
+	if (!content.trim() || submitting) return;
+	submitting = true;
+	await fetch(`${API}/api/comments`, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+			Authorization: `Bearer ${token}`,
+		},
+		body: JSON.stringify({ page_slug: pageSlug, content: content.trim() }),
+	});
+	content = "";
+	submitting = false;
+	await loadComments();
+}
 
-  async function doDelete(id) {
-    if (!confirm("确认删除？")) return;
-    await fetch(`${API}/api/comments/${id}`, {
-      method: "DELETE", headers: { "Authorization": `Bearer ${token}` },
-    });
-    await loadComments();
-  }
+async function doDelete(id) {
+	if (!confirm("确认删除？")) return;
+	await fetch(`${API}/api/comments/${id}`, {
+		method: "DELETE",
+		headers: { Authorization: `Bearer ${token}` },
+	});
+	await loadComments();
+}
 
-  function timeAgo(dateStr) {
-    const diff = Date.now() - new Date(dateStr).getTime();
-    const m = Math.floor(diff / 60000);
-    if (m < 1) return "刚刚";
-    if (m < 60) return `${m} 分钟前`;
-    const h = Math.floor(m / 60);
-    if (h < 24) return `${h} 小时前`;
-    return new Date(dateStr).toLocaleDateString("zh-CN");
-  }
+function timeAgo(dateStr) {
+	const diff = Date.now() - new Date(dateStr).getTime();
+	const m = Math.floor(diff / 60000);
+	if (m < 1) return "刚刚";
+	if (m < 60) return `${m} 分钟前`;
+	const h = Math.floor(m / 60);
+	if (h < 24) return `${h} 小时前`;
+	return new Date(dateStr).toLocaleDateString("zh-CN");
+}
 
-  function renderContent(text) {
-    if (!text) return "";
-    return text
-      .replace(/!\[.*?\]\((https?:\/\/[^\s)]+)\)/g, '<img src="$1" class="max-w-full rounded-lg my-2" loading="lazy" alt="" />')
-      .replace(/\n/g, "<br>");
-  }
+function renderContent(text) {
+	if (!text) return "";
+	return text
+		.replace(
+			/!\[.*?\]\((https?:\/\/[^\s)]+)\)/g,
+			'<img src="$1" class="max-w-full rounded-lg my-2" loading="lazy" alt="" />',
+		)
+		.replace(/\n/g, "<br>");
+}
 </script>
 
 <div class="ustinus-comments">
@@ -165,16 +260,22 @@
       <h3 class="text-lg font-bold" style="color: var(--btn-content)">评论 ({comments.length})</h3>
       {#if user}
         <div class="flex items-center gap-2">
-          <label class="relative cursor-pointer group" title="更换头像">
-            <div class="w-7 h-7 rounded-full overflow-hidden border-2 transition-all" style="border-color: var(--primary)">
+          <label class="relative cursor-pointer group" title="点击更换头像">
+            <div class="w-8 h-8 rounded-full overflow-hidden border-2 transition-all hover:opacity-80" style="border-color: var(--primary)">
               {#if user.avatar_url}
                 <img src={user.avatar_url} alt="" class="w-full h-full object-cover" />
               {:else}
-                <div class="w-full h-full flex items-center justify-center text-white text-xs font-bold" style="background: var(--primary)">{user.username[0]?.toUpperCase()}</div>
+                <div class="w-full h-full flex items-center justify-center text-white text-sm font-bold" style="background: var(--primary)">{user.username[0]?.toUpperCase()}</div>
               {/if}
+              <div class="absolute inset-0 bg-black/40 rounded-full opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><circle cx="12" cy="13" r="3"/></svg>
+              </div>
             </div>
             <input type="file" accept="image/*" class="hidden" onchange={(e) => handleAvatarUpload(e)} disabled={uploading} />
           </label>
+          {#if uploading}
+            <span class="w-4 h-4 border-2 border-(--primary) border-t-transparent rounded-full animate-spin"></span>
+          {/if}
           <span class="text-sm" style="color: var(--btn-content)">{user.username}</span>
           <button onclick={doLogout} class="text-xs cursor-pointer" style="color: var(--content-meta)">退出</button>
         </div>
@@ -241,7 +342,10 @@
   {/if}
 
   {#if loading}
-    <div class="text-center py-8 text-sm" style="color: var(--content-meta)">加载中...</div>
+    <div class="flex items-center justify-center py-12 gap-2 text-sm" style="color: var(--content-meta)">
+        <span class="w-5 h-5 border-2 border-(--primary) border-t-transparent rounded-full animate-spin"></span>
+        加载评论中...
+      </div>
   {:else if comments.length === 0}
     <div class="text-center py-12 text-sm" style="color: var(--content-meta)">
       <svg class="w-10 h-10 mx-auto mb-2 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
